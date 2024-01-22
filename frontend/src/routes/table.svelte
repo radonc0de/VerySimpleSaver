@@ -28,7 +28,7 @@
 	}
 
 	function formatDate(timestamp: number) {
-		const date = new Date(timestamp);
+		const date = new Date(timestamp * 1000);
 		return date.toLocaleDateString();
 	};
 
@@ -84,6 +84,9 @@
 				</td>
 				<td>
 					{transaction.amount}
+				</td>
+				<td>
+					{transaction.method}
 				</td>
 			</tr>
 		{/each}
