@@ -4,7 +4,7 @@
 </div>
 <div class="modal-card">
 	<header class="modal-card-head">
-		<p class="modal-card-title">Modal title</p>
+		<p class="modal-card-title">Editor</p>
 		<button class="delete" aria-label="close" on:click={() => menuSelection = 0}></button>
 	</header>
 	<section class="modal-card-body">
@@ -22,7 +22,7 @@
 			<input type="text" id="desc" bind:value={desc} />
 
 			<label for="category">Category:</label>
-			<input type="text" id="category" bind:value={cat} />
+			<CategorySelect bind:category={cat} />
 
 			<label for="amount">Amount:</label>
 			<input type="number" id="amount" step=".01" bind:value={amount} />
@@ -38,6 +38,7 @@
 
 <script lang="ts">
 	import { constants } from '../env';
+	import CategorySelect from './category-select.svelte';
 
 	let rawDate = formatToday();
 	let method = 0;

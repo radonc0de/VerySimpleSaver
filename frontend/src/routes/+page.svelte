@@ -37,16 +37,17 @@
 	</div>
 
 	<Menu bind:menuSelection={currMenu}/>
-	<br>
-	<br>
-	<br>
-
-	<Table transactions={transactions} />
+	<section class="hero is-primary is-fullheight-with-navbar">
+		<div class="hero-body">
+		  <p class="title">
+			<Table transactions={transactions} />
+		  </p>
+		</div>
+	  </section>
 
 </div>
 
 
 <style>
-
 
 </style>

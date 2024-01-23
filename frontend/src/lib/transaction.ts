@@ -3,7 +3,7 @@ export default interface Transaction {
 	date: number,
 	who: string,
 	desc: string,
-	cat: string,
+	cat: number,
 	amount: number,
 	method: number
 }

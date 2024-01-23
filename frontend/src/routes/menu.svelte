@@ -8,25 +8,25 @@
 	</div>
 	<div class="navbar-menu" class:is-active={navbarOpen}>
 		<div class="navbar-start">
-			<a class="navbar-item" href="." on:click={() => {menuSelection = 1}}>
+			<a class="navbar-item" href="." on:click={() => {selectionMade(1)}}>
 				Transaction
 			</a>
-			<a class="navbar-item" href="." on:click={() => {menuSelection = 2}}>
+			<a class="navbar-item" href="." on:click={() => {selectionMade(2)}}>
 				Categories	
 			</a>
-			<a class="navbar-item" href="." on:click={() => {menuSelection = 3}}>
+			<a class="navbar-item" href="." on:click={() => {selectionMade(3)}}>
 				Methods	
 			</a>
 		</div>
 		<div class="navbar-end">
-			<a class="navbar-item" href="." on:click={() => {menuSelection = 4}}>
+			<a class="navbar-item" href="." on:click={() => {selectionMade(4)}}>
 				Options	
 			</a>
 		</div>
 	</div>
 </nav>
 
-<script>
+<script lang="ts">
 	let navbarOpen = false;
 	export let menuSelection = 0;
 
@@ -34,8 +34,9 @@
 		navbarOpen = !navbarOpen;
 	}
 
-	function selectionMade(){
-
+	function selectionMade(x: number){
+		menuSelection = x;
+		navbarOpen = false;
 	}
 
 </script>

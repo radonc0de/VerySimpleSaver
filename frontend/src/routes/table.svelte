@@ -1,5 +1,8 @@
 <script lang="ts">
 	import  type Transaction from '../lib/transaction';
+	import { constants } from '../env';
+	import { onMount } from 'svelte';
+	import  type Category from '../lib/category';
 
 	let netMonth = 0;
 	let netYear = 0;
@@ -33,72 +36,101 @@
 		return date.toLocaleDateString();
 	};
 
+	let categories: Category[] = [];
+
+	onMount(async() => {
+		fetchData();
+	})
+
+	async function fetchData() {
+		try {
+			const response = await fetch(constants.API_URL + '/categories');
+			categories = await response.json();
+			categories.push({
+				name: "",
+				id: 0,
+				parent_id: 0
+			})
+			console.log(categories)
+		} catch (e) {
+			console.log(e);
+		}
+	}
 
 </script>
 
 <div class="container">
-	<div class="box">
-		Net Year: {netYear.toFixed(2)} 
-		<br>
-		Net Month: {netMonth.toFixed(2)}
+	<div class="columns is-flex is-justify-content-center" >
+		<div class="column is-half">
+			<div class="box">
+				<div class="columns is-flex is-justify-content-center is-size-4-mobile" >
+					Net Year: ${netYear.toFixed(2)} 
+					<br>
+					Net Month: ${netMonth.toFixed(2)}
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="columns is-flex is-justify-content-center" >
+		<div class="box">
+			<div class="columns is-flex is-justify-content-center is-size-4-mobile" >
+				Last 10 Transactions
+			</div>
+			<table class="table is-size-6-mobile">
+				<thead>
+					<tr>
+						<th>
+							Date
+						</th>
+						<th>
+							To/From
+						</th>
+						{#if !isMobile}
+							<th>
+								Method
+							</th>
+							<th>
+								Desc
+							</th>
+						{/if}
+						<th>
+							Category
+						</th>
+						<th>
+							Amount
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					{#each transactions as transaction}
+						<tr>
+							<td>
+								{formatDate(transaction.date)}
+							</td>
+							<td>
+								{transaction.who}
+							</td>
+							{#if !isMobile}
+								<td>
+									{transaction.method}
+								</td>
+								<td>
+									{transaction.desc}
+								</td>
+							{/if}
+							<td>
+								{categories.filter(c => c.id == transaction.cat)[0].name}
+							</td>
+							<td>
+								{transaction.amount}
+							</td>
+						</tr>
+					{/each}
+				</tbody>
+			</table>
+		</div>
 	</div>
 
-</div>
-
-<div class="container">
-	<h2>Last 10 Transactions</h2>
-	<table class="table">
-		<thead>
-			<tr>
-				<th>
-					Date
-				</th>
-				<th>
-					To/From
-				</th>
-				{#if !isMobile}
-					<th>
-						Method
-					</th>
-					<th>
-						Desc
-					</th>
-				{/if}
-				<th>
-					Category
-				</th>
-				<th>
-					Amount
-				</th>
-			</tr>
-		</thead>
-		<tbody>
-			{#each transactions as transaction}
-				<tr>
-					<td>
-						{formatDate(transaction.date)}
-					</td>
-					<td>
-						{transaction.who}
-					</td>
-					{#if !isMobile}
-						<td>
-							{transaction.method}
-						</td>
-						<td>
-							{transaction.desc}
-						</td>
-					{/if}
-					<td>
-						{transaction.cat}
-					</td>
-					<td>
-						{transaction.amount}
-					</td>
-				</tr>
-			{/each}
-		</tbody>
-	</table>
 
 </div>
 
