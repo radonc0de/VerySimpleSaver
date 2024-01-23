@@ -13,7 +13,7 @@
 			<input type="date" id="date" bind:value={rawDate} />
 
 			<label for="method">Method:</label>
-			<input type="number" id="method" bind:value={method} />
+			<MethodSelect bind:method={method} />
 
 			<label for="who">Who:</label>
 			<input type="text" id="who" bind:value={who} />
@@ -39,6 +39,7 @@
 <script lang="ts">
 	import { constants } from '../env';
 	import CategorySelect from './category-select.svelte';
+	import MethodSelect from './method-select.svelte';
 
 	let rawDate = formatToday();
 	let method = 0;
