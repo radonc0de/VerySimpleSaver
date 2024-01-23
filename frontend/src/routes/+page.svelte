@@ -3,9 +3,12 @@
 	import { onMount } from 'svelte';
 	import Table from './table.svelte';
 	import Editor from './editor.svelte'
+	import Menu from './menu.svelte';
 	import { constants } from '../env';
 
 	let transactions: Transaction[] = [];
+	let modalOpen = false;
+	let currMenu = 0;
 
 	async function fetchData() {
 		try {
@@ -21,7 +24,29 @@
 		fetchData();
 	})
 
-</script>
 
-<Editor />
-<Table transactions={transactions} />
+	function toggleModal(openMenu: number){
+		modalOpen = !modalOpen;
+		currMenu = openMenu;
+	}
+
+</script>
+<div class="container">
+	<div class={`modal ${currMenu != 0 ? 'is-active' : ''}`}>
+		<Editor bind:menuSelection={currMenu} />
+	</div>
+
+	<Menu bind:menuSelection={currMenu}/>
+	<br>
+	<br>
+	<br>
+
+	<Table transactions={transactions} />
+
+</div>
+
+
+<style>
+
+
+</style>

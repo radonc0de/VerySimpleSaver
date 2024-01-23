@@ -3,6 +3,7 @@
 
 	let netMonth = 0;
 	let netYear = 0;
+	let isMobile = true;
 	export let transactions: Transaction[];
 	$: if (transactions) {
 		updateBalance();
@@ -35,63 +36,73 @@
 
 </script>
 
-<div>
-	Net Year: {netYear} 
-	<br>
-	Net Month: {netMonth}
+<div class="container">
+	<div class="box">
+		Net Year: {netYear.toFixed(2)} 
+		<br>
+		Net Month: {netMonth.toFixed(2)}
+	</div>
 
 </div>
 
-<h2>Transactions</h2>
-
-<table>
-	<thead>
-		<tr>
-			<th>
-				Date
-			</th>
-			<th>
-				To/From
-			</th>
-			<th>
-				Desc
-			</th>
-			<th>
-				Category
-			</th>
-			<th>
-				Amount
-			</th>
-			<th>
-				Method
-			</th>
-		</tr>
-	</thead>
-	<tbody>
-		{#each transactions as transaction}
+<div class="container">
+	<h2>Last 10 Transactions</h2>
+	<table class="table">
+		<thead>
 			<tr>
-				<td>
-					{formatDate(transaction.date)}
-				</td>
-				<td>
-					{transaction.who}
-				</td>
-				<td>
-					{transaction.desc}
-				</td>
-				<td>
-					{transaction.cat}
-				</td>
-				<td>
-					{transaction.amount}
-				</td>
-				<td>
-					{transaction.method}
-				</td>
+				<th>
+					Date
+				</th>
+				<th>
+					To/From
+				</th>
+				{#if !isMobile}
+					<th>
+						Method
+					</th>
+					<th>
+						Desc
+					</th>
+				{/if}
+				<th>
+					Category
+				</th>
+				<th>
+					Amount
+				</th>
 			</tr>
-		{/each}
-	</tbody>
-</table>
+		</thead>
+		<tbody>
+			{#each transactions as transaction}
+				<tr>
+					<td>
+						{formatDate(transaction.date)}
+					</td>
+					<td>
+						{transaction.who}
+					</td>
+					{#if !isMobile}
+						<td>
+							{transaction.method}
+						</td>
+						<td>
+							{transaction.desc}
+						</td>
+					{/if}
+					<td>
+						{transaction.cat}
+					</td>
+					<td>
+						{transaction.amount}
+					</td>
+				</tr>
+			{/each}
+		</tbody>
+	</table>
+
+</div>
+
+
 
 
 <style>

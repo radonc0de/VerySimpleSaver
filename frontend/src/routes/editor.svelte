@@ -1,27 +1,40 @@
 
-<form on:submit|preventDefault={handleSubmit}>
-	<label for="date">Date:</label>
-	<input type="date" id="date" bind:value={rawDate} />
+<div class="modal-background">
 
-	<label for="method">Method:</label>
-	<input type="number" id="method" bind:value={method} />
+</div>
+<div class="modal-card">
+	<header class="modal-card-head">
+		<p class="modal-card-title">Modal title</p>
+		<button class="delete" aria-label="close" on:click={() => menuSelection = 0}></button>
+	</header>
+	<section class="modal-card-body">
+		<form >
+					<label for="date">Date:</label>
+			<input type="date" id="date" bind:value={rawDate} />
 
-	<label for="who">Who:</label>
-	<input type="text" id="who" bind:value={who} />
+			<label for="method">Method:</label>
+			<input type="number" id="method" bind:value={method} />
 
-	<label for="desc">Desc:</label>
-	<input type="text" id="desc" bind:value={desc} />
+			<label for="who">Who:</label>
+			<input type="text" id="who" bind:value={who} />
 
-	<label for="category">Category:</label>
-	<input type="text" id="category" bind:value={cat} />
+			<label for="desc">Desc:</label>
+			<input type="text" id="desc" bind:value={desc} />
 
-	<label for="amount">Amount:</label>
-	<input type="number" id="amount" step=".01" bind:value={amount} />
+			<label for="category">Category:</label>
+			<input type="text" id="category" bind:value={cat} />
 
-	<button type="submit">Submit</button>
+			<label for="amount">Amount:</label>
+			<input type="number" id="amount" step=".01" bind:value={amount} />
 
+		</form>
+	</section>
+	<footer class="modal-card-foot">
+		<button class="button is-success" on:click|preventDefault={handleSubmit}>Save</button>
+		<button class="button" on:click={() => menuSelection = 0}>Cancel</button>
+	</footer>
+</div>
 
-</form>
 
 <script lang="ts">
 	import { constants } from '../env';
@@ -32,6 +45,7 @@
 	let desc = "";
 	let cat = 0;
 	let amount = 0.0;
+	export let menuSelection = 0;
 
 	function formatToday(): string {
 		let date = new Date();
@@ -40,6 +54,7 @@
 		let day = date.getDate().toString().padStart(2, '0');
 		return `${year}-${month}-${day}`;
 	}
+
 
 	async function handleSubmit() {
 		let date = new Date(rawDate).getTime() / 1000;
@@ -81,15 +96,4 @@
 	margin-bottom: 10px;
 	}
 
-	button {
-	background-color: blue;
-	color: white;
-	padding: 5px 10px;
-	border: none;
-	border-radius: 5px;
-	}
-
-	button:hover {
-	background-color: darkblue;
-	}
 </style>
