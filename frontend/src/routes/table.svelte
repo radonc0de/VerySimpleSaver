@@ -41,6 +41,24 @@
 		return `${formattedMonth}/${formattedDay}`;
 	};
 
+	async function deleteTransaction(){
+		await fetch(constants.API_URL + '/transactions', {
+			method: 'DELETE',
+			headers: {
+				'Content-Type' : 'application/json',
+			},
+			body: JSON.stringify({id: selectedId}),
+		})
+		.then(resp => resp.json())
+		.then(data => {
+			transactions.set($transactions.filter(a => a.id != selectedId))
+		})
+		.catch((err) => {
+			console.error('Error:', err);
+		})
+		
+	}
+
 
 	onMount(async() => {
 		transactions.set($transactions.sort((a, b) => b.date - a.date));
@@ -72,7 +90,7 @@
 						<button class="button is-success">Edit</button>
 					</div>
 					<div class="control">
-						<button class="button is-danger">Delete</button>
+						<button class="button is-danger" on:click={deleteTransaction}>Delete</button>
 					</div>
 				</div>
 				{/if}

@@ -36,7 +36,7 @@ class Method(db.Model):
 
 	transactions = db.relationship("Transaction", back_populates="method_obj")
 
-@app.route('/transactions', methods=['GET', 'POST'])
+@app.route('/transactions', methods=['GET', 'POST', 'DELETE'])
 def manage_transactions():
 	if request.method == 'POST':
 		data = request.json
@@ -61,6 +61,13 @@ def manage_transactions():
 				'amount' : entry.amount
 			}
 		)
+	elif request.method == 'DELETE':
+		data = request.json
+		transaction_id = data['id']
+		obj = Transaction.query.get(transaction_id)
+		db.session.delete(obj)
+		db.session.commit()
+		return jsonify({"message": "Delete successful"}), 200
 	else:
 		entries = Transaction.query.all()
 		return jsonify([

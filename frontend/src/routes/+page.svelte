@@ -29,12 +29,6 @@
 		fetchData('/transactions', (resp: Transaction[]) => transactions.set(resp));
 	})
 
-
-	function toggleModal(openMenu: number){
-		modalOpen = !modalOpen;
-		currMenu = openMenu;
-	}
-
 </script>
 <div class="container">
 	<div class={`modal ${currMenu != 0 ? 'is-active' : ''}`}>
@@ -44,7 +38,7 @@
 	<Menu bind:menuSelection={currMenu}/>
 	<section class="hero is-primary is-fullheight-with-navbar">
 		<div class="hero-body">
-			{#if $transactions.length != 0}
+			{#if $transactions.length != 0 && $categories.length != 0}
 				<div class="tile is-ancestor">
 					<div class="tile is-vertical">
 						<div class="tile">
