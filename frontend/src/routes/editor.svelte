@@ -51,6 +51,13 @@
 					</div>
 				</div>
 
+				<div class="field">
+					<label class="label" for="color">Color</label>
+					<div class="control">
+						<input id="color" class="input" type="color" bind:value={desc} placeholder=0>
+					</div>
+				</div>
+
 			{:else if menuSelection == 3}
 				<div class="field">
 					<label class="label" for="name">Name</label>
@@ -71,7 +78,6 @@
 <script lang="ts">
 	import { constants } from '../env';
 	import CategorySelect from './category-select.svelte';
-	import Menu from './menu.svelte';
 	import MethodSelect from './method-select.svelte';
 
 	let rawDate = formatToday();
@@ -105,9 +111,11 @@
 				date	
 			}
 		}else if(menuSelection == 2){
+			amount = parseInt(desc.slice(1), 16);
 			toSubmit = {
 				who,
-				cat	
+				cat,
+				amount
 			}
 		}else if(menuSelection == 3){
 			toSubmit = {

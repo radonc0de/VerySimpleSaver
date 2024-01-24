@@ -1,28 +1,32 @@
 <script lang="ts">
-	import  type Transaction from '../lib/transaction';
-	import { onMount } from 'svelte';
 	import Table from './table.svelte';
 	import Editor from './editor.svelte'
 	import Menu from './menu.svelte';
+	import Charts from './charts.svelte';
+	import type Transaction from '../lib/transaction';
+	import type Method from '../lib/method';
+	import type Category from '../lib/category';
 	import { constants } from '../env';
+	import { onMount } from 'svelte';
+	import { transactions, methods, categories } from './store';
 
-	let transactions: Transaction[] = [];
 	let modalOpen = false;
 	let currMenu = 0;
 
-	async function fetchData() {
+	async function fetchData(path: string, ref: (resp: any[]) => void){
 		try {
-			const response = await fetch(constants.API_URL + '/transactions');
-			transactions = await response.json();
-			transactions = transactions.sort((a, b) => b.date - a.date)
-			console.log(transactions)
+			const response = await fetch(constants.API_URL + path);
+			let data = await response.json();
+			ref(data);
 		} catch (e) {
 			console.log(e);
 		}
 	}
 
 	onMount(async() => {
-		fetchData();
+		fetchData('/methods', (resp: Method[]) => methods.set(resp));
+		fetchData('/categories', (resp: Category[]) => categories.set(resp));
+		fetchData('/transactions', (resp: Transaction[]) => transactions.set(resp));
 	})
 
 
@@ -40,9 +44,19 @@
 	<Menu bind:menuSelection={currMenu}/>
 	<section class="hero is-primary is-fullheight-with-navbar">
 		<div class="hero-body">
-		  <p class="title">
-			<Table transactions={transactions} />
-		  </p>
+			{#if $transactions.length != 0}
+				<div class="tile is-ancestor">
+					<div class="tile is-vertical">
+						<div class="tile">
+							<Charts />
+						</div>
+						<br>
+						<div class="tile">
+							<Table />
+						</div>
+					</div>
+				</div>
+			{/if}
 		</div>
 	  </section>
 

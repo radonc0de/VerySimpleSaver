@@ -26,6 +26,7 @@ class Category(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	parent_id = db.Column(db.Integer)
 	name = db.Column(db.String(100))
+	color = db.Column(db.Integer)
 
 	transactions = db.relationship("Transaction", back_populates="category")
 
@@ -80,7 +81,8 @@ def manage_categories():
 		data = request.json
 		entry = Category(
 			parent_id = data['cat'],
-			name = data['who']
+			name = data['who'],
+			color = data['amount']
 		)
 		db.session.add(entry)
 		db.session.commit()
@@ -88,7 +90,8 @@ def manage_categories():
 			{
 				'id': entry.id,
 				'name': entry.name,
-				'parent_id': entry.parent_id
+				'parent_id': entry.parent_id,
+				'color': entry.color
 			}
 		)
 	else:
@@ -97,7 +100,8 @@ def manage_categories():
 			{
 				'id': entry.id,
 				'name': entry.name,
-				'parent_id': entry.parent_id
+				'parent_id': entry.parent_id,
+				'color': entry.color
 			} for entry in entries
 		])
 

@@ -3,12 +3,12 @@
 	import { constants } from '../env';
 	import { onMount } from 'svelte';
 	import  type Category from '../lib/category';
+	import { transactions, methods, categories } from './store';
 
 	let netMonth = 0;
 	let netYear = 0;
 	let isMobile = true;
 	let selectedId = 0;
-	export let transactions: Transaction[];
 	$: if (transactions) {
 		updateBalance();
 	}
@@ -22,7 +22,7 @@
 	function updateBalance(){
 		netMonth = 0;
 		netYear = 0;
-		transactions.forEach(t => {
+		$transactions.forEach(t => {
 			if(t.date> startOfYearUnix){
 				netYear += t.amount;
 				if(t.date > startOfMonthUnix){
@@ -41,26 +41,10 @@
 		return `${formattedMonth}/${formattedDay}`;
 	};
 
-	let categories: Category[] = [];
 
 	onMount(async() => {
-		fetchData();
+		transactions.set($transactions.sort((a, b) => b.date - a.date));
 	})
-
-	async function fetchData() {
-		try {
-			const response = await fetch(constants.API_URL + '/categories');
-			categories = await response.json();
-			categories.push({
-				name: "",
-				id: 0,
-				parent_id: 0
-			})
-			console.log(categories)
-		} catch (e) {
-			console.log(e);
-		}
-	}
 
 </script>
 
@@ -79,7 +63,7 @@
 	<div class="columns is-flex is-justify-content-center" >
 		<div class="box">
 			<div class="columns is-flex is-justify-content-center is-size-4-mobile" >
-				Last 10 Transactions
+				Transactions
 			</div>
 			<div class="columns is-flex is-justify-content-center is-size-4-mobile" >
 				{#if selectedId != 0}
@@ -119,27 +103,27 @@
 					</tr>
 				</thead>
 				<tbody>
-					{#each transactions as transaction}
-						<tr class:is-selected={selectedId == transaction.id} on:click={() => {selectedId == transaction.id? selectedId = 0 : selectedId = transaction.id}}>
+					{#each $transactions as $transaction}
+						<tr class:is-selected={selectedId == $transaction.id} on:click={() => {selectedId == $transaction.id? selectedId = 0 : selectedId = $transaction.id}}>
 							<td>
-								{formatDate(transaction.date)}
+								{formatDate($transaction.date)}
 							</td>
 							<td>
-								{transaction.who}
+								{$transaction.who}
 							</td>
 							{#if !isMobile}
 								<td>
-									{transaction.method}
+									{$transaction.method}
 								</td>
 								<td>
-									{transaction.desc}
+									{$transaction.desc}
 								</td>
 							{/if}
 							<td>
-								{categories.filter(c => c.id == transaction.cat)[0].name}
+								{categories && $categories.length > 0? $categories.filter(c => c.id == $transaction.cat)[0].name : ""}
 							</td>
 							<td>
-								{transaction.amount}
+								{$transaction.amount}
 							</td>
 						</tr>
 					{/each}
