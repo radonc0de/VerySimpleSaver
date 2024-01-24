@@ -33,21 +33,45 @@
 	let pieDataSet: number[] = [];
 	let pieColors: string[] = [];
 
-	onMount(async() => {
+	$categories : {
 		console.log(genRecords())
 		let records = genRecords();
+		let toRemove: number[] = [];
+		let childRemaining = true;
+		while(childRemaining){
+			childRemaining = false;
+			Object.keys(records).forEach(keyStr => {
+				const cat_id = parseInt(keyStr, 10);
+				const amount = records[cat_id];
+				if (amount < 0) {
+					let ctgry = $categories.filter(a => a.id == cat_id)[0];
+					if(ctgry.parent_id != 0){
+						childRemaining = true;
+						if(records[ctgry.parent_id]){
+							records[ctgry.parent_id] += amount;
+						}else{
+							records[ctgry.parent_id] = amount;
+						}
+						toRemove.push(cat_id)
+					}
+				}else{
+					toRemove.push(cat_id);
+				}
+			});
+			toRemove.forEach(d => delete records[d]);
+			toRemove = [];
+		}
 		Object.keys(records).forEach(keyStr => {
 			const cat_id = parseInt(keyStr, 10);
 			const amount = records[cat_id];
-			if (amount < 0) {
-				let ctgry = $categories.filter(a => a.id == cat_id)[0];
-				pieLabels.push(ctgry.name);
-				pieColors.push('#' + ctgry.color.toString(16).padStart(6, '0'));
-				pieDataSet.push(amount * -1);
-			}
-		})
+			let ctgry = $categories.filter(a => a.id == cat_id)[0];
+			pieLabels.push(ctgry.name);
+			pieColors.push('#' + ctgry.color.toString(16).padStart(6, '0'));
+			pieDataSet.push(amount * -1);
+		});
+
 		loading = false;
-	})
+	}
 
 	const data = {
 		labels: pieLabels,
@@ -69,12 +93,29 @@
 
 </script>
 <div class="container">
-	{#if loading == false}
-		<Pie 
-			data={data} 
-			options={options} 
-			width={300}
-			height={300}
-		/>
-	{/if}
+	<div class="columns is-flex is-justify-content-center" >
+		<div class="column is-half">
+			<div class="box">
+				<div class="columns is-flex is-justify-content-center is-size-4-mobile" >
+					Expenses
+				</div>
+				<div class="columns is-flex is-justify-content-center is-size-4-mobile" >
+					{#if loading == false}
+						<Pie 
+							data={data} 
+							options={options} 
+							width={300}
+							height={300}
+						/>
+					{/if}
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
+
+<style>
+.container {
+	margin-top: 25px
+}
+</style>

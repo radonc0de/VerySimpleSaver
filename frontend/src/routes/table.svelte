@@ -1,9 +1,7 @@
 <script lang="ts">
-	import  type Transaction from '../lib/transaction';
 	import { constants } from '../env';
 	import { onMount } from 'svelte';
-	import  type Category from '../lib/category';
-	import { transactions, methods, categories } from './store';
+	import { transactions, categories } from './store';
 
 	let netMonth = 0;
 	let netYear = 0;
@@ -14,18 +12,18 @@
 	}
 
 	const now = new Date();
-	const startOfYear = new Date(now.getFullYear(), 0, 1);
+	const startOfYear = new Date(Date.UTC(now.getUTCFullYear(), 0, 1));
 	const startOfYearUnix = Math.floor(startOfYear.getTime() / 1000);
-	const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+	const startOfMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
 	const startOfMonthUnix = Math.floor(startOfMonth.getTime() / 1000);
 
 	function updateBalance(){
 		netMonth = 0;
 		netYear = 0;
 		$transactions.forEach(t => {
-			if(t.date> startOfYearUnix){
+			if(t.date >= startOfYearUnix){
 				netYear += t.amount;
-				if(t.date > startOfMonthUnix){
+				if(t.date >= startOfMonthUnix){
 					netMonth += t.amount;
 				}
 			}
@@ -34,8 +32,8 @@
 
 	function formatDate(timestamp: number) {
 		const date = new Date(timestamp * 1000);
-		const month = date.getMonth() + 1; // getMonth() is zero-based
-		const day = date.getDate();
+		const month = date.getUTCMonth() + 1; // getMonth() is zero-based
+		const day = date.getUTCDate();
 		const formattedMonth = month < 10 ? `0${month}` : `${month}`;
 		const formattedDay = day < 10 ? `0${day}` : `${day}`;
 		return `${formattedMonth}/${formattedDay}`;
@@ -61,7 +59,6 @@
 
 
 	onMount(async() => {
-		transactions.set($transactions.sort((a, b) => b.date - a.date));
 	})
 
 </script>
@@ -81,7 +78,7 @@
 	<div class="columns is-flex is-justify-content-center" >
 		<div class="box">
 			<div class="columns is-flex is-justify-content-center is-size-4-mobile" >
-				Transactions
+				Transactions ({$transactions.length})
 			</div>
 			<div class="columns is-flex is-justify-content-center is-size-4-mobile" >
 				{#if selectedId != 0}
@@ -141,7 +138,7 @@
 								{categories && $categories.length > 0? $categories.filter(c => c.id == $transaction.cat)[0].name : ""}
 							</td>
 							<td>
-								{$transaction.amount}
+								{$transaction.amount.toFixed(2)}
 							</td>
 						</tr>
 					{/each}

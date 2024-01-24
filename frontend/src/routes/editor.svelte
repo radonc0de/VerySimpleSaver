@@ -40,21 +40,21 @@
 				<div class="field">
 					<label class="label" for="name" >Name</label>
 					<div class="control">
-						<input id="name" class="input" type="text" bind:value={who} placeholder="Category Name">
+						<input id="name" class="input" type="text" bind:value={name} placeholder="Category Name">
 					</div>
 				</div>
 
 				<div class="field">
 					<label class="label" for="category">Parent Category:</label>
 					<div class="control">
-						<CategorySelect bind:category={cat} />
+						<CategorySelect bind:category={parent_id} />
 					</div>
 				</div>
 
 				<div class="field">
 					<label class="label" for="color">Color</label>
 					<div class="control">
-						<input id="color" class="input" type="color" bind:value={desc} placeholder=0>
+						<input id="color" class="input" type="color" bind:value={colorString} placeholder=0>
 					</div>
 				</div>
 
@@ -62,7 +62,7 @@
 				<div class="field">
 					<label class="label" for="name">Name</label>
 					<div class="control">
-						<input id="name" class="input" type="text" bind:value={who} placeholder="Method Name">
+						<input id="name" class="input" type="text" bind:value={name} placeholder="Method Name">
 					</div>
 				</div>
 			{/if}
@@ -76,9 +76,12 @@
 
 
 <script lang="ts">
-	import { constants } from '../env';
+	import type Transaction from '$lib/transaction';
+	import type Category from '$lib/category';
+	import type Method from '$lib/method';
 	import CategorySelect from './category-select.svelte';
 	import MethodSelect from './method-select.svelte';
+	import { addTransaction, addCategory, addMethod } from './store';
 
 	let rawDate = formatToday();
 	let method = 0;
@@ -86,6 +89,9 @@
 	let desc = "";
 	let cat = 0;
 	let amount = 0.0;
+	let name = ""
+	let colorString = "#FFFFFF";
+	let parent_id = 0;
 	export let menuSelection = 0;
 
 	function formatToday(): string {
@@ -96,46 +102,49 @@
 		return `${year}-${month}-${day}`;
 	}
 
-
 	async function handleSubmit() {
-		let toSubmit;
-		let path = '/' + (menuSelection == 1? 'transactions' : menuSelection == 2? 'categories' : 'methods');
 		if(menuSelection == 1){
 			let date = new Date(rawDate).getTime() / 1000;
-			toSubmit = {
+			let toSubmit: Transaction = {
+				id: 0, 
 				who, 
 				desc,
 				cat,
 				amount, 
 				method, 
-				date	
+				date
 			}
+			addTransaction(toSubmit);
 		}else if(menuSelection == 2){
-			amount = parseInt(desc.slice(1), 16);
-			toSubmit = {
-				who,
-				cat,
-				amount
+			let color = parseInt(colorString.slice(1), 16);
+			let toSubmit: Category = {
+				id: 0,
+				name,
+				color,
+				parent_id
 			}
+			addCategory(toSubmit);
 		}else if(menuSelection == 3){
-			toSubmit = {
-				who
+			let toSubmit: Method = {
+				id: 0,
+				name,
 			}
+			addMethod(toSubmit);
 		}
-		await fetch(constants.API_URL + path, {
-			method: 'POST',
-			headers: {
-				'Content-Type' : 'application/json',
-			},
-			body: JSON.stringify(toSubmit),
-		})
-		.then(resp => resp.json())
-		.then(data => {
-			menuSelection = 0;
-		})
-		.catch((err) => {
-			console.error('Error:', err);
-		})
+		resetFields();
+	}
+
+
+	function resetFields() {
+		rawDate = formatToday();
+		method = 0;
+		who = "";
+		desc = "";
+		cat = 0;
+		amount = 0.0;
+		name = ""
+		colorString = "#FFFFFF";
+		parent_id = 0;
 	}
 </script>
 
