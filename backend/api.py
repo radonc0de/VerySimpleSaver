@@ -87,9 +87,9 @@ def manage_categories():
 	if request.method == 'POST':
 		data = request.json
 		entry = Category(
-			parent_id = data['cat'],
-			name = data['who'],
-			color = data['amount']
+			parent_id = data['parent_id'],
+			name = data['name'],
+			color = data['color']
 		)
 		db.session.add(entry)
 		db.session.commit()
@@ -117,7 +117,7 @@ def manage_methods():
 	if request.method == 'POST':
 		data = request.json
 		entry = Method(
-			name = data['who']
+			name = data['name']
 		)
 		db.session.add(entry)
 		db.session.commit()
