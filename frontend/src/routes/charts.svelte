@@ -43,19 +43,15 @@
 			Object.keys(records).forEach(keyStr => {
 				const cat_id = parseInt(keyStr, 10);
 				const amount = records[cat_id];
-				if (amount < 0) {
-					let ctgry = $categories.filter(a => a.id == cat_id)[0];
-					if(ctgry.parent_id != 0){
-						childRemaining = true;
-						if(records[ctgry.parent_id]){
-							records[ctgry.parent_id] += amount;
-						}else{
-							records[ctgry.parent_id] = amount;
-						}
-						toRemove.push(cat_id)
+				let ctgry = $categories.filter(a => a.id == cat_id)[0];
+				if(ctgry.parent_id != 0){
+					childRemaining = true;
+					if(records[ctgry.parent_id]){
+						records[ctgry.parent_id] += amount;
+					}else{
+						records[ctgry.parent_id] = amount;
 					}
-				}else{
-					toRemove.push(cat_id);
+					toRemove.push(cat_id)
 				}
 			});
 			toRemove.forEach(d => delete records[d]);
@@ -64,10 +60,12 @@
 		Object.keys(records).forEach(keyStr => {
 			const cat_id = parseInt(keyStr, 10);
 			const amount = records[cat_id];
-			let ctgry = $categories.filter(a => a.id == cat_id)[0];
-			pieLabels.push(ctgry.name);
-			pieColors.push('#' + ctgry.color.toString(16).padStart(6, '0'));
-			pieDataSet.push(amount * -1);
+			if(amount < 0){
+				let ctgry = $categories.filter(a => a.id == cat_id)[0];
+				pieLabels.push(ctgry.name);
+				pieColors.push('#' + ctgry.color.toString(16).padStart(6, '0'));
+				pieDataSet.push(amount);
+			}
 		});
 
 		loading = false;
