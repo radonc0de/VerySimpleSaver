@@ -79,8 +79,8 @@ def manage_categories():
 	if request.method == 'POST':
 		data = request.json
 		entry = Category(
-			parent_id = data['parent_id'],
-			name = data['name']
+			parent_id = data['cat'],
+			name = data['who']
 		)
 		db.session.add(entry)
 		db.session.commit()
@@ -106,7 +106,7 @@ def manage_methods():
 	if request.method == 'POST':
 		data = request.json
 		entry = Method(
-			name = data['name']
+			name = data['who']
 		)
 		db.session.add(entry)
 		db.session.commit()
@@ -126,7 +126,7 @@ def manage_methods():
 		])
 if __name__ == '__main__':
 	db.create_all()  # Create database tables
-	app.run(debug=True)
+	app.run(debug=True, host='192.168.0.101')
 
 
 	

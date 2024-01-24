@@ -14,6 +14,7 @@
 		try {
 			const response = await fetch(constants.API_URL + '/transactions');
 			transactions = await response.json();
+			transactions = transactions.sort((a, b) => b.date - a.date)
 			console.log(transactions)
 		} catch (e) {
 			console.log(e);

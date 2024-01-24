@@ -4,29 +4,61 @@
 </div>
 <div class="modal-card">
 	<header class="modal-card-head">
-		<p class="modal-card-title">Editor</p>
+		<p class="modal-card-title">
+			{#if menuSelection == 1}
+				Transaction
+			{:else if menuSelection == 2}
+				Category
+			{:else if menuSelection == 3}
+				Method
+			{/if}
+			Editor 
+		</p>
 		<button class="delete" aria-label="close" on:click={() => menuSelection = 0}></button>
 	</header>
 	<section class="modal-card-body">
 		<form >
-					<label for="date">Date:</label>
-			<input type="date" id="date" bind:value={rawDate} />
+			{#if menuSelection == 1}
+				<label for="date">Date:</label>
+				<input type="date" id="date" bind:value={rawDate} />
 
-			<label for="method">Method:</label>
-			<MethodSelect bind:method={method} />
+				<label for="method">Method:</label>
+				<MethodSelect bind:method={method} />
 
-			<label for="who">Who:</label>
-			<input type="text" id="who" bind:value={who} />
+				<label for="who">Who:</label>
+				<input type="text" id="who" bind:value={who} />
 
-			<label for="desc">Desc:</label>
-			<input type="text" id="desc" bind:value={desc} />
+				<label for="desc">Desc:</label>
+				<input type="text" id="desc" bind:value={desc} />
 
-			<label for="category">Category:</label>
-			<CategorySelect bind:category={cat} />
+				<label for="category">Category:</label>
+				<CategorySelect bind:category={cat} />
 
-			<label for="amount">Amount:</label>
-			<input type="number" id="amount" step=".01" bind:value={amount} />
+				<label for="amount">Amount:</label>
+				<input type="number" id="amount" step=".01" bind:value={amount} />
+			{:else if menuSelection == 2}
+				<div class="field">
+					<label class="label" for="name" >Name</label>
+					<div class="control">
+						<input id="name" class="input" type="text" bind:value={who} placeholder="Category Name">
+					</div>
+				</div>
 
+				<div class="field">
+					<label class="label" for="category">Parent Category:</label>
+					<div class="control">
+						<CategorySelect bind:category={cat} />
+					</div>
+				</div>
+
+			{:else if menuSelection == 3}
+				<div class="field">
+					<label class="label" for="name">Name</label>
+					<div class="control">
+						<input id="name" class="input" type="text" bind:value={who} placeholder="Method Name">
+					</div>
+				</div>
+			{/if}
 		</form>
 	</section>
 	<footer class="modal-card-foot">
@@ -39,6 +71,7 @@
 <script lang="ts">
 	import { constants } from '../env';
 	import CategorySelect from './category-select.svelte';
+	import Menu from './menu.svelte';
 	import MethodSelect from './method-select.svelte';
 
 	let rawDate = formatToday();
@@ -59,17 +92,29 @@
 
 
 	async function handleSubmit() {
-		let date = new Date(rawDate).getTime() / 1000;
-		let toSubmit = {
-			who, 
-			desc,
-			cat,
-			amount, 
-			method, 
-			date	
+		let toSubmit;
+		let path = '/' + (menuSelection == 1? 'transactions' : menuSelection == 2? 'categories' : 'methods');
+		if(menuSelection == 1){
+			let date = new Date(rawDate).getTime() / 1000;
+			toSubmit = {
+				who, 
+				desc,
+				cat,
+				amount, 
+				method, 
+				date	
+			}
+		}else if(menuSelection == 2){
+			toSubmit = {
+				who,
+				cat	
+			}
+		}else if(menuSelection == 3){
+			toSubmit = {
+				who
+			}
 		}
-
-		await fetch(constants.API_URL + '/transactions', {
+		await fetch(constants.API_URL + path, {
 			method: 'POST',
 			headers: {
 				'Content-Type' : 'application/json',
@@ -78,7 +123,7 @@
 		})
 		.then(resp => resp.json())
 		.then(data => {
-			console.log(data);
+			menuSelection = 0;
 		})
 		.catch((err) => {
 			console.error('Error:', err);

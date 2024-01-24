@@ -7,6 +7,7 @@
 	let netMonth = 0;
 	let netYear = 0;
 	let isMobile = true;
+	let selectedId = 0;
 	export let transactions: Transaction[];
 	$: if (transactions) {
 		updateBalance();
@@ -33,7 +34,11 @@
 
 	function formatDate(timestamp: number) {
 		const date = new Date(timestamp * 1000);
-		return date.toLocaleDateString();
+		const month = date.getMonth() + 1; // getMonth() is zero-based
+		const day = date.getDate();
+		const formattedMonth = month < 10 ? `0${month}` : `${month}`;
+		const formattedDay = day < 10 ? `0${day}` : `${day}`;
+		return `${formattedMonth}/${formattedDay}`;
 	};
 
 	let categories: Category[] = [];
@@ -76,14 +81,26 @@
 			<div class="columns is-flex is-justify-content-center is-size-4-mobile" >
 				Last 10 Transactions
 			</div>
-			<table class="table is-size-6-mobile">
+			<div class="columns is-flex is-justify-content-center is-size-4-mobile" >
+				{#if selectedId != 0}
+				<div class="field is-grouped">
+					<div class="control">
+						<button class="button is-success">Edit</button>
+					</div>
+					<div class="control">
+						<button class="button is-danger">Delete</button>
+					</div>
+				</div>
+				{/if}
+			</div>
+			<table class="table is-size-7-mobile">
 				<thead>
 					<tr>
 						<th>
 							Date
 						</th>
 						<th>
-							To/From
+							Who	
 						</th>
 						{#if !isMobile}
 							<th>
@@ -103,7 +120,7 @@
 				</thead>
 				<tbody>
 					{#each transactions as transaction}
-						<tr>
+						<tr class:is-selected={selectedId == transaction.id} on:click={() => {selectedId == transaction.id? selectedId = 0 : selectedId = transaction.id}}>
 							<td>
 								{formatDate(transaction.date)}
 							</td>
@@ -133,32 +150,3 @@
 
 
 </div>
-
-
-
-
-<style>
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    text-align: left;
-  }
-
-  th, td {
-    padding: 8px 16px;
-    border-bottom: 1px solid #ddd;
-  }
-
-  th {
-    background-color: #f4f4f4;
-    font-weight: bold;
-  }
-
-  tr:nth-child(even) {
-    background-color: #f9f9f9;
-  }
-
-  tr:hover {
-    background-color: #f1f1f1;
-  }
-</style>
