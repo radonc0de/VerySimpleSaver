@@ -8,7 +8,7 @@
 </div>
 
 <script lang="ts">
-	import { constants } from '../env';
+	import { constants } from './env';
 	import { onMount } from 'svelte';
 	import  type Method from '../lib/method';
 

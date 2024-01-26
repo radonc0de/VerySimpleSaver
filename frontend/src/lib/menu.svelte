@@ -6,21 +6,27 @@
 			<span aria-hidden="true"></span>
 		  </a>
 	</div>
+	<!-- svelte-ignore a11y-click-events-have-key-events -->
+	<!-- svelte-ignore a11y-no-static-element-interactions -->
+	<!-- svelte-ignore a11y-missing-attribute -->
 	<div class="navbar-menu" class:is-active={navbarOpen}>
 		<div class="navbar-start">
-			<a class="navbar-item" href="." on:click={() => {selectionMade(1)}}>
+			<a class="navbar-item" on:click={() => {selectionMade(1)}}>
 				Transaction
 			</a>
-			<a class="navbar-item" href="." on:click={() => {selectionMade(2)}}>
+			<a class="navbar-item" on:click={() => {selectionMade(2)}}>
 				Categories	
 			</a>
-			<a class="navbar-item" href="." on:click={() => {selectionMade(3)}}>
+			<a class="navbar-item" on:click={() => {selectionMade(3)}}>
 				Methods	
 			</a>
 		</div>
 		<div class="navbar-end">
-			<a class="navbar-item" href="." on:click={() => {selectionMade(4)}}>
+			<a class="navbar-item" on:click={() => {selectionMade(4)}}>
 				Options	
+			</a>
+			<a class="navbar-item" on:click={() => {selectionMade(5)}}>
+				Login	
 			</a>
 		</div>
 	</div>

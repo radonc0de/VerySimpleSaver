@@ -137,7 +137,7 @@ def manage_methods():
 		])
 if __name__ == '__main__':
 	db.create_all()  # Create database tables
-	app.run(debug=True, host='192.168.0.101')
+	app.run(debug=True)
 
 
 	
