@@ -14,7 +14,6 @@
 	})
 
 </script>
-<div class="container">
 	<div class={`modal ${currMenu != 0 ? 'is-active' : ''}`}>
 		<Editor bind:menuSelection={currMenu} />
 	</div>
@@ -37,7 +36,6 @@
 		</div>
 	  </section>
 
-</div>
 
 
 <style>

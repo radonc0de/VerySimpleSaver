@@ -5,6 +5,8 @@
 
 	let netMonth = 0;
 	let netYear = 0;
+	let totalInc = 0;
+	let totalExp = 0;
 	let isMobile = true;
 	let selectedId = 0;
 	$: if (transactions) {
@@ -20,11 +22,18 @@
 	function updateBalance(){
 		netMonth = 0;
 		netYear = 0;
+		totalInc = 0;
+		totalExp = 0;
 		$transactions.forEach(t => {
 			if(t.date >= startOfYearUnix){
 				netYear += t.amount;
 				if(t.date >= startOfMonthUnix){
 					netMonth += t.amount;
+					if(t.amount > 0){
+						totalInc += t.amount;
+					}else{
+						totalExp -= t.amount;
+					}
 				}
 			}
 		})
@@ -71,6 +80,10 @@
 					Net Year: ${netYear.toFixed(2)} 
 					<br>
 					Net Month: ${netMonth.toFixed(2)}
+					<br>
+					Income This Month: ${totalInc.toFixed(2)}
+					<br>
+					Expenses This Month: ${totalExp.toFixed(2)}
 				</div>
 			</div>
 		</div>
