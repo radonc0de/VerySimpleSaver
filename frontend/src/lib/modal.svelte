@@ -90,8 +90,8 @@
 							</div>
 						</div>
 						<div class="tile">
-							<div class="container has-text-centered" on:click={() => createAccount = true}>
-								<button class="button is-info">Sign up</button>
+							<div class="container has-text-centered">
+								<button class="button is-info" on:click={() => createAccount = true}>Sign up</button>
 							</div>
 						</div>
 					</div>
