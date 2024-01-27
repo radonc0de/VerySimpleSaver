@@ -19,6 +19,10 @@ class Account(db.Model):
 	password = db.Column(db.String(100))
 	createdAt = db.Column(db.Integer)
 
+	transactions = db.relationship("Transaction", back_populates="user")
+	methods = db.relationship("Method", back_populates="user")
+	categories = db.relationship("Category", back_populates="user")
+
 class Transaction(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	date = db.Column(db.Integer)
@@ -27,7 +31,9 @@ class Transaction(db.Model):
 	desc = db.Column(db.String)
 	cat = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=True)
 	amount = db.Column(db.Float)
+	user_id = db.Column(db.Integer, db.ForeignKey('account.id'), nullable=True)
 
+	user = db.relationship("Account", back_populates="transactions")
 	category = db.relationship("Category", back_populates="transactions")
 	method_obj = db.relationship("Method", back_populates="transactions")
 
@@ -36,13 +42,17 @@ class Category(db.Model):
 	parent_id = db.Column(db.Integer)
 	name = db.Column(db.String(100))
 	color = db.Column(db.Integer)
+	user_id = db.Column(db.Integer, db.ForeignKey('account.id'), nullable=True)
 
+	user = db.relationship("Account", back_populates="categories")
 	transactions = db.relationship("Transaction", back_populates="category")
 
 class Method(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String(100))
+	user_id = db.Column(db.Integer, db.ForeignKey('account.id'), nullable=True)
 
+	user = db.relationship("Account", back_populates="methods")
 	transactions = db.relationship("Transaction", back_populates="method_obj")
 
 secret_key = 'move_me_somewhere'
@@ -54,10 +64,9 @@ def get_by_email(email):
 		if user:
 			return user 
 		else:
-			return null
+			return None
 	except:
-		return null
-	# query db for matching user, return user object
+		return None
 
 def create_jwt(email):
 	payload = {
@@ -72,9 +81,9 @@ def decode_jwt(token):
 		decoded_payload = jwt.decode(token, secret_key, algorithms=['HS256'])
 		return decoded_payload['email']
 	except jwt.ExpiredSignatureError:
-		return
+		return None
 	except jwt.InvalidTokenError:
-		return
+		return None
 	return 
 
 def salt_and_hash_pass(password):
@@ -88,7 +97,7 @@ def authenticate(request):
 	if header_value and email:
 		return get_by_email(email) 
 	else:
-		return
+		return None
 
 @app.route('/login', methods=['POST'])
 def login_request():
@@ -118,7 +127,7 @@ def create_account():
 @app.route('/transactions', methods=['GET', 'POST', 'DELETE'])
 def manage_transactions():
 	user = authenticate(request)
-	if not user:
+	if None:
 		return jsonify({"message": "Unauthorized"}), 401 
 	if request.method == 'POST':
 		data = request.json
@@ -128,7 +137,8 @@ def manage_transactions():
 			who = data['who'],
 			desc = data['desc'],
 			cat = data['cat'],
-			amount = data['amount']
+			amount = data['amount'],
+			user_id = user.id
 		)
 		db.session.add(entry)
 		db.session.commit()
@@ -174,7 +184,8 @@ def manage_categories():
 		entry = Category(
 			parent_id = data['parent_id'],
 			name = data['name'],
-			color = data['color']
+			color = data['color'],
+			user_id = user.id
 		)
 		db.session.add(entry)
 		db.session.commit()
@@ -205,7 +216,8 @@ def manage_methods():
 	if request.method == 'POST':
 		data = request.json
 		entry = Method(
-			name = data['name']
+			name = data['name'],
+			user_id = user.id
 		)
 		db.session.add(entry)
 		db.session.commit()
