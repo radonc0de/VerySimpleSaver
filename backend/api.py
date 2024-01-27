@@ -31,7 +31,7 @@ class Transaction(db.Model):
 	desc = db.Column(db.String)
 	cat = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=True)
 	amount = db.Column(db.Float)
-	user_id = db.Column(db.Integer, db.ForeignKey('account.id'), nullable=True)
+	user_id = db.Column(db.Integer, db.ForeignKey('account.id'), nullable=False)
 
 	user = db.relationship("Account", back_populates="transactions")
 	category = db.relationship("Category", back_populates="transactions")
@@ -42,7 +42,7 @@ class Category(db.Model):
 	parent_id = db.Column(db.Integer)
 	name = db.Column(db.String(100))
 	color = db.Column(db.Integer)
-	user_id = db.Column(db.Integer, db.ForeignKey('account.id'), nullable=True)
+	user_id = db.Column(db.Integer, db.ForeignKey('account.id'), nullable=False)
 
 	user = db.relationship("Account", back_populates="categories")
 	transactions = db.relationship("Transaction", back_populates="category")
@@ -50,7 +50,7 @@ class Category(db.Model):
 class Method(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String(100))
-	user_id = db.Column(db.Integer, db.ForeignKey('account.id'), nullable=True)
+	user_id = db.Column(db.Integer, db.ForeignKey('account.id'), nullable=False)
 
 	user = db.relationship("Account", back_populates="methods")
 	transactions = db.relationship("Transaction", back_populates="method_obj")

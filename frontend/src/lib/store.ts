@@ -91,39 +91,47 @@ export async function addTransaction(t: Transaction){
 }
 
 export async function addCategory(c: Category){
-	await fetch(constants.API_URL + '/categories', {
-		method: 'POST',
-		headers: {
-			'Content-Type' : 'application/json',
-		},
-		body: JSON.stringify(c), 
-	}).then(resp => resp.json()).then(data => {
-		categories.update(curr => {
-			curr.push(data as Category);
-			return curr;
+	let token = localStorage.getItem('token')
+	if(token){
+		await fetch(constants.API_URL + '/categories', {
+			method: 'POST',
+			headers: {
+				'Content-Type' : 'application/json',
+				'token': token
+			},
+			body: JSON.stringify(c), 
+		}).then(resp => resp.json()).then(data => {
+			categories.update(curr => {
+				curr.push(data as Category);
+				return curr;
+			})
 		})
-	})
-	.catch((err) => {
-		console.error('Error:', err);
-		return  null;
-	})
+		.catch((err) => {
+			console.error('Error:', err);
+			return  null;
+		})
+	}
 }
 
 export async function addMethod(m: Method){
-	await fetch(constants.API_URL + '/methods', {
-		method: 'POST',
-		headers: {
-			'Content-Type' : 'application/json',
-		},
-		body: JSON.stringify(m), 
-	}).then(resp => resp.json()).then(data => {
-		methods.update(curr => {
-			curr.push(data as Method);
-			return curr;
+	let token = localStorage.getItem('token')
+	if(token){
+		await fetch(constants.API_URL + '/methods', {
+			method: 'POST',
+			headers: {
+				'Content-Type' : 'application/json',
+				'token': token
+			},
+			body: JSON.stringify(m), 
+		}).then(resp => resp.json()).then(data => {
+			methods.update(curr => {
+				curr.push(data as Method);
+				return curr;
+			})
 		})
-	})
-	.catch((err) => {
-		console.error('Error:', err);
-		return  null;
-	})
+		.catch((err) => {
+			console.error('Error:', err);
+			return  null;
+		})
+	}
 }

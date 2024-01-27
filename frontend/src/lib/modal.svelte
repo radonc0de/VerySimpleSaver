@@ -6,7 +6,7 @@
 	<header class="modal-card-head">
 		<p class="modal-card-title">
 			{#if menuSelection == 5}
-				Log In / Sign Up
+				Account
 			{:else if menuSelection == 4}
 				Options	
 			{:else}
@@ -81,7 +81,11 @@
 		</footer>
 	{:else if menuSelection == 5}
 		<section class="modal-card-body">
-			{#if !login && !createAccount}
+			{#if token != null}
+				<div class="container has-text-centered">
+					<button class="button is-danger" on:click={logOut}>Log Out</button>
+				</div>
+			{:else if !login && !createAccount}
 				<div class="tile is-ancestor">
 					<div class="tile is-parent">
 						<div class="tile">
@@ -139,6 +143,9 @@
 	let parent_id = 0;
 	export let menuSelection = 0;
 
+
+	let token = localStorage.getItem('token')
+
 	function formatToday(): string {
 		let date = new Date();
 		let year = date.getFullYear();
@@ -190,6 +197,11 @@
 		name = ""
 		colorString = "#FFFFFF";
 		parent_id = 0;
+	}
+
+	function logOut(){
+		localStorage.removeItem('token');
+		window.location.href = ".";
 	}
 </script>
 

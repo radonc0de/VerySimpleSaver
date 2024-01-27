@@ -26,8 +26,15 @@
 				Options	
 			</a>
 			<a class="navbar-item" on:click={() => {selectionMade(5)}}>
-				{email != ""? email: 'Login'}	
+				{email != ""? 'Log Out' : 'Log In'}
 			</a>
+			{#if email != ""}
+			<a class="navbar-item">
+				<strong>
+					{email}	
+				</strong>
+			</a>
+			{/if}
 		</div>
 	</div>
 </nav>

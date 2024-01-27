@@ -10,5 +10,4 @@
 <script lang="ts">
 	import { categories } from './store';
 	export let category = 0;
-
 </script>
