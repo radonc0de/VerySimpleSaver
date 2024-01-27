@@ -19,7 +19,7 @@
 
                 <div class="field">
                     <div class="control">
-                        <button class="button is-primary" on:click={() => {}}>Login</button>
+                        <button class="button is-primary" on:click={login}>Login</button>
                     </div>
                 </div>
             </div>
@@ -27,3 +27,26 @@
     </div>
 </div>
 
+<script lang="ts">
+	import { constants } from './env';
+
+	let email = "";
+	let password = "";
+
+	async function login(){
+		await fetch(constants.API_URL + '/login', {
+			method: 'POST',
+			headers: {
+				'Content-Type' : 'application/json',
+			},
+			body: JSON.stringify({email, password})
+		}).then(resp => resp.json()).then(data => {
+			console.log(data.token)
+			localStorage.setItem('token', data.token);
+		})
+		.catch((err) => {
+			console.error('Error:', err);
+			return  null;
+		})
+	}
+</script>

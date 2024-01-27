@@ -1,12 +1,11 @@
 
 <script lang="ts">
 	import Table from './lib/table.svelte';
-	import Editor from './lib/editor.svelte'
+	import Modal from './lib/modal.svelte'
 	import Menu from './lib/menu.svelte';
 	import Charts from './lib/charts.svelte';
 	import { onMount } from 'svelte';
 	import { transactions, methods, categories, getTransactions, getMethods, getCategories} from './lib/store';
-    import Accounts from './lib/accounts.svelte';
 	let currMenu = 0;
 
 	onMount(async() => {
@@ -17,7 +16,7 @@
 
 </script>
 	<div class={`modal ${currMenu != 0 ? 'is-active' : ''}`}>
-		<Editor bind:menuSelection={currMenu} />
+		<Modal bind:menuSelection={currMenu} />
 	</div>
 
 	<Menu bind:menuSelection={currMenu}/>

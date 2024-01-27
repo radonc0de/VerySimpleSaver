@@ -26,23 +26,31 @@
 				Options	
 			</a>
 			<a class="navbar-item" on:click={() => {selectionMade(5)}}>
-				Login	
+				{email != ""? email: 'Login'}	
 			</a>
 		</div>
 	</div>
 </nav>
 
 <script lang="ts">
-	let navbarOpen = false;
-	export let menuSelection = 0;
 
-	function toggleNavbar(){
-		navbarOpen = !navbarOpen;
-	}
+let navbarOpen = false;
+export let menuSelection = 0;
+let token = localStorage.getItem('token')
+let email = "";
+if(token){
+	let payloadJSON = atob(token.split('.')[1]);
+	let payload = JSON.parse(payloadJSON);
+	email = payload.email;
+}
 
-	function selectionMade(x: number){
-		menuSelection = x;
-		navbarOpen = false;
-	}
+function toggleNavbar(){
+	navbarOpen = !navbarOpen;
+}
+
+function selectionMade(x: number){
+	menuSelection = x;
+	navbarOpen = false;
+}
 
 </script>

@@ -3,12 +3,21 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from datetime import datetime, timedelta
 import copy
+import jwt
+import datetime
+import hashlib
 
 
 app = Flask(__name__)
 CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:password@localhost/blk'
 db = SQLAlchemy(app)
+
+class Account(db.Model):
+	id = db.Column(db.Integer, primary_key=True)
+	email = db.Column(db.String(100), unique=True, nullable=False)
+	password = db.Column(db.String(100))
+	createdAt = db.Column(db.Integer)
 
 class Transaction(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
@@ -36,8 +45,81 @@ class Method(db.Model):
 
 	transactions = db.relationship("Transaction", back_populates="method_obj")
 
+secret_key = 'move_me_somewhere'
+salt = 'me_too'
+
+def get_by_email(email):
+	try:
+		user = Account.query.filter_by(email=email).first()
+		if user:
+			return user 
+		else:
+			return null
+	except:
+		return null
+	# query db for matching user, return user object
+
+def create_jwt(email):
+	payload = {
+		'email' : email,
+		'exp' : datetime.datetime.utcnow() + datetime.timedelta(days=1)
+	}
+	token = jwt.encode(payload, secret_key, algorithm='HS256')
+	return token
+
+def decode_jwt(token):
+	try:
+		decoded_payload = jwt.decode(token, secret_key, algorithms=['HS256'])
+		return decoded_payload['email']
+	except jwt.ExpiredSignatureError:
+		return
+	except jwt.InvalidTokenError:
+		return
+	return 
+
+def salt_and_hash_pass(password):
+	password_salt = (password + salt).encode()
+	hashed_password = hashlib.sha256(password_salt).hexdigest()
+	return hashed_password
+
+def authenticate(request):
+	header_value = request.headers.get('token')
+	email = decode_jwt(header_value)
+	if header_value and email:
+		return get_by_email(email) 
+	else:
+		return
+
+@app.route('/login', methods=['POST'])
+def login_request():
+	if request.method == 'POST':
+		data = request.json
+		user = get_by_email(data['email'])
+		hashed_password = salt_and_hash_pass(data['password'])
+		if user and user.password == hashed_password:
+			token = create_jwt(data['email'])
+			return jsonify({"token": token})
+		else:
+			return jsonify({"message": "Invalid Credentials"}), 401
+
+@app.route('/createaccount', methods=['POST'])
+def create_account():
+	if request.method == 'POST':
+		data = request.json
+		entry = Account(
+			email = data['email'],
+			password = salt_and_hash_pass(data['password']),
+			createdAt = int(datetime.datetime.utcnow().timestamp())
+		)
+		db.session.add(entry)
+		db.session.commit()
+		return jsonify({"message": "Account created successfully"}), 200
+		
 @app.route('/transactions', methods=['GET', 'POST', 'DELETE'])
 def manage_transactions():
+	user = authenticate(request)
+	if not user:
+		return jsonify({"message": "Unauthorized"}), 401 
 	if request.method == 'POST':
 		data = request.json
 		entry = Transaction(
@@ -84,6 +166,9 @@ def manage_transactions():
 
 @app.route('/categories', methods=['GET', 'POST'])
 def manage_categories():
+	user = authenticate(request)
+	if not user:
+		return jsonify({"message": "Unauthorized"}), 401 
 	if request.method == 'POST':
 		data = request.json
 		entry = Category(
@@ -114,6 +199,9 @@ def manage_categories():
 
 @app.route('/methods', methods=['GET', 'POST'])
 def manage_methods():
+	user = authenticate(request)
+	if not user:
+		return jsonify({"message": "Unauthorized"}), 401 
 	if request.method == 'POST':
 		data = request.json
 		entry = Method(

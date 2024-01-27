@@ -81,20 +81,26 @@
 		</footer>
 	{:else if menuSelection == 5}
 		<section class="modal-card-body">
-			<div class="tile is-ancestor">
-				<div class="tile is-parent">
-					<div class="tile">
-						<div class="container has-text-centered">
-							<button class="button is-success">Log In</button>
+			{#if !login && !createAccount}
+				<div class="tile is-ancestor">
+					<div class="tile is-parent">
+						<div class="tile">
+							<div class="container has-text-centered">
+								<button class="button is-success" on:click={() => login = true}>Log In</button>
+							</div>
 						</div>
-					</div>
-					<div class="tile">
-						<div class="container has-text-centered">
-							<button class="button is-info">Sign up</button>
+						<div class="tile">
+							<div class="container has-text-centered" on:click={() => createAccount = true}>
+								<button class="button is-info">Sign up</button>
+							</div>
 						</div>
 					</div>
 				</div>
-			</div>
+			{:else if login}
+				<Login />
+			{:else}
+				<CreateAccount />
+			{/if}
 		</section>
 		<footer class="modal-card-foot">
 		</footer>
@@ -111,14 +117,17 @@
 
 
 <script lang="ts">
-	import type Transaction from '../lib/transaction';
-	import type Category from '../lib/category';
-	import type Method from '../lib/method';
+	import type Transaction from './transaction';
+	import type Category from './category';
+	import type Method from './method';
 	import CategorySelect from './category-select.svelte';
 	import MethodSelect from './method-select.svelte';
 	import { addTransaction, addCategory, addMethod } from './store';
-    import Menu from './menu.svelte';
-
+	import Login from './login.svelte';
+	import CreateAccount from './createAccount.svelte';
+	
+	let login = false
+	let createAccount = false
 	let rawDate = formatToday();
 	let method = 0;
 	let who = "";

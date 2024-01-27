@@ -10,53 +10,84 @@ export let transactions = writable<Transaction[]>([]);
 
 
 export async function getTransactions(){
-	try {
-		const response = await fetch(constants.API_URL + '/transactions');
-		let data = await response.json();
-		data = data.sort((a: Transaction, b: Transaction) => b.date - a.date);
-		transactions.set(data);
-	} catch (e) {
-		console.log(e);
+	let token = localStorage.getItem('token')
+	if(token){
+		try {
+			const response = await fetch(constants.API_URL + '/transactions', {
+				method: 'GET',
+				headers: {
+					'Content-Type' : 'application/json',
+					'token': token
+				},
+			})
+			let data = await response.json();
+			data = data.sort((a: Transaction, b: Transaction) => b.date - a.date);
+			transactions.set(data);
+		} catch (e) {
+			console.log(e);
+		}
 	}
 }
 
 export async function getMethods(){
-	try {
-		const response = await fetch(constants.API_URL + '/methods');
-		let data = await response.json();
-		methods.set(data);
-	} catch (e) {
-		console.log(e);
+	let token = localStorage.getItem('token')
+	if(token){
+		try {
+			const response = await fetch(constants.API_URL + '/methods', {
+				method: 'GET',
+				headers: {
+					'Content-Type' : 'application/json',
+					'token': token
+				},
+			})
+			let data = await response.json();
+			methods.set(data);
+		} catch (e) {
+			console.log(e);
+		}
 	}
 }
 
 export async function getCategories(){
-	try {
-		const response = await fetch(constants.API_URL + '/categories');
-		let data = await response.json();
-		categories.set(data);
-	} catch (e) {
-		console.log(e);
+	let token = localStorage.getItem('token')
+	if(token){
+		try {
+			const response = await fetch(constants.API_URL + '/categories', {
+				method: 'GET',
+				headers: {
+					'Content-Type' : 'application/json',
+					'token': token
+				},
+			})
+			let data = await response.json();
+			categories.set(data);
+		} catch (e) {
+			console.log(e);
+		}
 	}
 }
 
 export async function addTransaction(t: Transaction){
-	await fetch(constants.API_URL + '/transactions', {
-		method: 'POST',
-		headers: {
-			'Content-Type' : 'application/json',
-		},
-		body: JSON.stringify(t), 
-	}).then(resp => resp.json()).then(data => {
-		transactions.update(curr => {
-			curr.push(data as Transaction);
-			return curr.sort((a, b) => b.date - a.date);
+	let token = localStorage.getItem('token')
+	if(token){
+		await fetch(constants.API_URL + '/transactions', {
+			method: 'POST',
+			headers: {
+				'Content-Type' : 'application/json',
+				'token': token
+			},
+			body: JSON.stringify(t), 
+		}).then(resp => resp.json()).then(data => {
+			transactions.update(curr => {
+				curr.push(data as Transaction);
+				return curr.sort((a, b) => b.date - a.date);
+			})
 		})
-	})
-	.catch((err) => {
-		console.error('Error:', err);
-		return  null;
-	})
+		.catch((err) => {
+			console.error('Error:', err);
+			return  null;
+		})
+	}
 }
 
 export async function addCategory(c: Category){
