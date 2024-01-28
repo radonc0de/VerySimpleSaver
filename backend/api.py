@@ -161,7 +161,7 @@ def manage_transactions():
 		db.session.commit()
 		return jsonify({"message": "Delete successful"}), 200
 	else:
-		entries = Transaction.query.all()
+		entries = Transaction.query.filter_by(user_id=user.id).all()
 		return jsonify([
 			{
 				'id': entry.id,
@@ -198,7 +198,7 @@ def manage_categories():
 			}
 		)
 	else:
-		entries = Category.query.all()
+		entries = Category.query.filter_by(user_id=user.id).all()
 		return jsonify([
 			{
 				'id': entry.id,
@@ -228,7 +228,7 @@ def manage_methods():
 			}
 		)
 	else:
-		entries = Method.query.all()
+		entries = Method.query.filter_by(user_id=user.id).all()
 		return jsonify([
 			{
 				'id': entry.id,
