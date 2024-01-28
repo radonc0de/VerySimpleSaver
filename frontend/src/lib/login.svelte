@@ -43,6 +43,7 @@
 		}).then(resp => resp.json()).then(data => {
 			console.log(data.token)
 			localStorage.setItem('token', data.token);
+			window.location.href = ".";
 		})
 		.catch((err) => {
 			console.error('Error:', err);
