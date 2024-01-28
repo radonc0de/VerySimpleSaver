@@ -1,6 +1,6 @@
 <div class="container">
     <div class="columns is-centered">
-        <div class="column is-4">
+        <div class="column is-10">
             <div class="box">
                 <h3 class="title is-3">Login</h3>
                 <div class="field">
