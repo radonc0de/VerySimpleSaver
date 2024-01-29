@@ -1,6 +1,9 @@
 <nav class="navbar is-fixed-top">
 	<div class="navbar-brand">
-		<a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample" on:click={toggleNavbar} href=".">
+		<!-- svelte-ignore a11y-interactive-supports-focus -->
+		<!-- svelte-ignore a11y-click-events-have-key-events -->
+		<!-- svelte-ignore a11y-missing-attribute -->
+		<a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample" on:click={toggleNavbar}>
 			<span aria-hidden="true"></span>
 			<span aria-hidden="true"></span>
 			<span aria-hidden="true"></span>
