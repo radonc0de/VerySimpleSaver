@@ -133,11 +133,11 @@ export async function editTransaction(t: Transaction){
 	}
 }
 
-export async function addCategory(c: Category){
+export async function editCategory(c: Category){
 	let token = localStorage.getItem('token')
 	if(token){
 		await fetch(constants.API_URL + '/categories', {
-			method: 'POST',
+			method:c.id != 0? 'PUT' : 'POST',
 			headers: {
 				'Content-Type' : 'application/json',
 				'token': token
@@ -145,6 +145,7 @@ export async function addCategory(c: Category){
 			body: JSON.stringify(c), 
 		}).then(resp => resp.json()).then(data => {
 			categories.update(curr => {
+				curr = curr.filter(a => a.id != c.id);
 				curr.push(data as Category);
 				return curr;
 			})

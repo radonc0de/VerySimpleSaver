@@ -24,56 +24,65 @@
 	</header>
 	{#if $menuSelection < 4}
 		<section class="modal-card-body">
-			<form >
-				{#if $menuSelection >= 1 && $menuSelection < 2}
-					<label for="date">Date:</label>
-					<input type="date" id="date" bind:value={rawDate} />
+			<div class="container">
+				<form >
+					{#if $menuSelection >= 1 && $menuSelection < 2}
+						<label for="date">Date:</label>
+						<input type="date" id="date" bind:value={rawDate} />
 
-					<label for="method">Method:</label>
-					<MethodSelect bind:method={method} />
+						<label for="method">Method:</label>
+						<MethodSelect bind:method={method} />
 
-					<label for="who">Who:</label>
-					<input type="text" id="who" bind:value={who} />
+						<label for="who">Who:</label>
+						<input type="text" id="who" bind:value={who} />
 
-					<label for="desc">Desc:</label>
-					<input type="text" id="desc" bind:value={desc} />
+						<label for="desc">Desc:</label>
+						<input type="text" id="desc" bind:value={desc} />
 
-					<label for="category">Category:</label>
-					<CategorySelect bind:category={cat} />
+						<label for="category">Category:</label>
+						<CategorySelect bind:category={cat} />
 
-					<label for="amount">Amount:</label>
-					<input type="number" id="amount" step=".01" bind:value={amount} />
-				{:else if $menuSelection == 2}
-					<div class="field">
-						<label class="label" for="name" >Name</label>
-						<div class="control">
-							<input id="name" class="input" type="text" bind:value={name} placeholder="Category Name">
+						<label for="amount">Amount:</label>
+						<input type="number" id="amount" step=".01" bind:value={amount} />
+					{:else if $menuSelection == 2}
+						<div class="field">
+							<label class="label" for="category">Edit a Category:</label>
+							<div class="control">
+								<CategorySelect bind:category={categoryEdittingId} />
+							</div>
 						</div>
-					</div>
 
-					<div class="field">
-						<label class="label" for="category">Parent Category:</label>
-						<div class="control">
-							<CategorySelect bind:category={parent_id} />
+						<div class="field">
+							<label class="label" for="name" >Name</label>
+							<div class="control">
+								<input id="name" class="input" type="text" bind:value={name} placeholder="Category Name">
+							</div>
 						</div>
-					</div>
 
-					<div class="field">
-						<label class="label" for="color">Color</label>
-						<div class="control">
-							<input id="color" class="input" type="color" bind:value={colorString} placeholder=0>
+						<div class="field">
+							<label class="label" for="category">Parent Category:</label>
+							<div class="control">
+								<CategorySelect  bind:category={parent_id} />
+							</div>
 						</div>
-					</div>
 
-				{:else if $menuSelection == 3}
-					<div class="field">
-						<label class="label" for="name">Name</label>
-						<div class="control">
-							<input id="name" class="input" type="text" bind:value={name} placeholder="Method Name">
+						<div class="field">
+							<label class="label" for="color">Color</label>
+							<div class="control">
+								<input id="color" class="input" type="color" bind:value={colorString} placeholder=0>
+							</div>
 						</div>
-					</div>
-				{/if}
-			</form>
+
+					{:else if $menuSelection == 3}
+						<div class="field">
+							<label class="label" for="name">Name</label>
+							<div class="control">
+								<input id="name" class="input" type="text" bind:value={name} placeholder="Method Name">
+							</div>
+						</div>
+					{/if}
+				</form>
+			</div>
 		</section>
 		<footer class="modal-card-foot">
 			<button class="button is-success" on:click|preventDefault={handleSubmit}>Save</button>
@@ -125,7 +134,7 @@ import type Category from './category';
 import type Method from './method';
 import CategorySelect from './category-select.svelte';
 import MethodSelect from './method-select.svelte';
-import { editTransaction, addCategory, addMethod, menuSelection, email, transactionSelected} from './store';
+import { editTransaction, editCategory, addMethod, menuSelection, email, transactionSelected, categories, methods} from './store';
 import Login from './login.svelte';
 import CreateAccount from './createAccount.svelte';
 import { onMount } from 'svelte';
@@ -142,6 +151,17 @@ let name = ""
 let colorString = "#FFFFFF";
 let parent_id = 0;
 let copiedTransaction = false;
+let lastCopiedCategory = 0;
+let categoryEdittingId = 0;
+let methodEditting = 0
+
+$: if(categoryEdittingId && categoryEdittingId != lastCopiedCategory) {
+	let ctgry = $categories.filter(a => a.id == categoryEdittingId)[0];
+	name = ctgry.name;
+	parent_id = ctgry.parent_id;
+	colorString = '#' + ctgry.color.toString(16).padStart(6, '0');
+	lastCopiedCategory = categoryEdittingId;
+}
 
 // handle unauthorized request redirect to login
 $: if (menuSelection){
@@ -165,7 +185,6 @@ function exitModal() {
 	login = false;
 	createAccount = false;
 	resetFields();
-	console.log("resetting fields.")
 	menuSelection.set(0);
 }
 
@@ -201,12 +220,12 @@ async function handleSubmit() {
 	}else if($menuSelection == 2){
 		let color = parseInt(colorString.slice(1), 16);
 		let toSubmit: Category = {
-			id: 0,
+			id: categoryEdittingId != 0? categoryEdittingId : 0,
 			name,
 			color,
 			parent_id
 		}
-		addCategory(toSubmit);
+		editCategory(toSubmit);
 	}else if($menuSelection == 3){
 		let toSubmit: Method = {
 			id: 0,
@@ -241,13 +260,12 @@ function logOut(refresh: boolean){
 
 <style>
 	form {
-	display: flex;
-	flex-direction: column;
-	width: 200px;
+		display: flex;
+		flex-direction: column;
 	}
 
 	label, input {
-	margin-bottom: 10px;
+		margin-bottom: 10px;
 	}
 
 </style>

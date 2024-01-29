@@ -194,30 +194,13 @@ def manage_transactions():
 		}
 	)
 
-@app.route('/categories', methods=['GET', 'POST'])
+@app.route('/categories', methods=['GET', 'POST', 'PUT'])
 def manage_categories():
 	user = authenticate(request)
 	if user == None:
 		return jsonify({"message": "Unauthorized"}), 401 
-	if request.method == 'POST':
-		data = request.json
-		entry = Category(
-			parent_id = data['parent_id'],
-			name = data['name'],
-			color = data['color'],
-			user_id = user.id
-		)
-		db.session.add(entry)
-		db.session.commit()
-		return jsonify(
-			{
-				'id': entry.id,
-				'name': entry.name,
-				'parent_id': entry.parent_id,
-				'color': entry.color
-			}
-		)
-	else:
+
+	if request.method == 'GET':
 		entries = Category.query.filter_by(user_id=user.id).all()
 		return jsonify([
 			{
@@ -227,6 +210,36 @@ def manage_categories():
 				'color': entry.color
 			} for entry in entries
 		])
+	
+	data = request.json
+	
+	if request.method == 'POST':
+		entry = Category(
+			parent_id = data['parent_id'],
+			name = data['name'],
+			color = data['color'],
+			user_id = user.id
+		)
+		db.session.add(entry)
+
+	elif request.method == 'PUT':
+		cat_id = data['id']
+		entry = Category.query.get(cat_id)
+
+		entry.parent_id = data['parent_id']
+		entry.name = data['name']
+		entry.color = data['color']
+
+	db.session.commit()
+	return jsonify(
+		{
+			'id': entry.id,
+			'name': entry.name,
+			'parent_id': entry.parent_id,
+			'color': entry.color
+		}
+	)
+
 
 @app.route('/methods', methods=['GET', 'POST'])
 def manage_methods():
