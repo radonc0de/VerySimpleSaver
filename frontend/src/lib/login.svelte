@@ -3,6 +3,9 @@
         <div class="column is-10">
             <div class="box">
                 <h3 class="title is-3">Login</h3>
+				<div class="box">
+					{notice}
+				</div>
                 <div class="field">
                     <label class="label" for="email">Email</label>
                     <div class="control">
@@ -32,6 +35,7 @@
 
 	let email = "";
 	let password = "";
+	export let notice = "";
 
 	async function login(){
 		await fetch(constants.API_URL + '/login', {

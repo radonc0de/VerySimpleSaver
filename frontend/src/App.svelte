@@ -5,8 +5,7 @@
 	import Menu from './lib/menu.svelte';
 	import Charts from './lib/charts.svelte';
 	import { onMount } from 'svelte';
-	import { transactions, methods, categories, getTransactions, getMethods, getCategories} from './lib/store';
-	let currMenu = 0;
+	import { transactions, methods, categories, getTransactions, getMethods, getCategories, menuSelection} from './lib/store';
 
 	onMount(async() => {
 		getTransactions();
@@ -15,11 +14,11 @@
 	})
 
 </script>
-	<div class={`modal ${currMenu != 0 ? 'is-active' : ''}`}>
-		<Modal bind:menuSelection={currMenu} />
+	<div class={`modal ${$menuSelection != 0 ? 'is-active' : ''}`}>
+		<Modal />
 	</div>
 
-	<Menu bind:menuSelection={currMenu}/>
+	<Menu />
 	<section class="hero is-primary is-fullheight">
 		<div class="hero-body">
 				<div class="tile is-ancestor">

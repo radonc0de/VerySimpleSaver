@@ -26,12 +26,12 @@
 				Options	
 			</a>
 			<a class="navbar-item" on:click={() => {selectionMade(5)}}>
-				{email != ""? 'Log Out' : 'Log In'}
+				{$email != ""? 'Log Out' : 'Log In'}
 			</a>
-			{#if email != ""}
+			{#if $email != ""}
 			<a class="navbar-item">
 				<strong>
-					{email}	
+					{$email}	
 				</strong>
 			</a>
 			{/if}
@@ -40,24 +40,19 @@
 </nav>
 
 <script lang="ts">
+import { menuSelection, email} from "./store";
 
 let navbarOpen = false;
-export let menuSelection = 0;
-let token = localStorage.getItem('token')
-let email = "";
-if(token){
-	let payloadJSON = atob(token.split('.')[1]);
-	let payload = JSON.parse(payloadJSON);
-	email = payload.email;
-}
 
 function toggleNavbar(){
 	navbarOpen = !navbarOpen;
 }
 
 function selectionMade(x: number){
-	menuSelection = x;
+	menuSelection.set(x);
 	navbarOpen = false;
+	console.log($menuSelection)
+
 }
 
 </script>

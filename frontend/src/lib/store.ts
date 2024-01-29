@@ -7,22 +7,46 @@ import { constants } from './env';
 export let methods = writable<Method[]>([]);
 export let categories = writable<Category[]>([]);
 export let transactions = writable<Transaction[]>([]);
+export let menuSelection = writable<number>();
+export let email = writable<string>("");
 
+menuSelection.set(0)
+let token = localStorage.getItem('token')
+if(token){
+	try{
+		let payloadJSON = atob(token.split('.')[1]);
+		let payload = JSON.parse(payloadJSON);
+		email.set(payload.email)
+	}
+	catch{
+		menuSelection.set(5.1);
+	}
+}else{
+	menuSelection.set(5.1);
+}
 
 export async function getTransactions(){
 	let token = localStorage.getItem('token')
 	if(token){
 		try {
-			const response = await fetch(constants.API_URL + '/transactions', {
+			const resp = await fetch(constants.API_URL + '/transactions', {
 				method: 'GET',
 				headers: {
 					'Content-Type' : 'application/json',
 					'token': token
 				},
-			})
-			let data = await response.json();
-			data = data.sort((a: Transaction, b: Transaction) => b.date - a.date);
-			transactions.set(data);
+			});
+			if(resp.ok){
+				let data = await resp.json();
+				data = data.sort((a: Transaction, b: Transaction) => b.date - a.date);
+				transactions.set(data);
+			} else if(resp.status == 401){
+				console.log("UNAUTH")
+				menuSelection.set(5.1)
+				email.set("")
+			}else{
+				throw Error;
+			}
 		} catch (e) {
 			console.log(e);
 		}
@@ -40,8 +64,16 @@ export async function getMethods(){
 					'token': token
 				},
 			})
-			let data = await response.json();
-			methods.set(data);
+			if (response.ok){
+				let data = await response.json();
+				methods.set(data);
+			} else if (response.status == 401){
+				console.log("UNAUTHORIZED");
+				menuSelection.set(5.1)
+				email.set("")
+			}else{
+				throw Error;
+			}
 		} catch (e) {
 			console.log(e);
 		}
@@ -59,8 +91,16 @@ export async function getCategories(){
 					'token': token
 				},
 			})
-			let data = await response.json();
-			categories.set(data);
+			if(response.ok){
+				let data = await response.json();
+				categories.set(data);
+			}else if (response.status == 401){
+				console.log("UNAUTHORIZED");
+				menuSelection.set(5.1)
+				email.set("")
+			}else{
+				throw Error;
+			}
 		} catch (e) {
 			console.log(e);
 		}

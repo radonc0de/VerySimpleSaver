@@ -95,6 +95,7 @@ def authenticate(request):
 	header_value = request.headers.get('token')
 	email = decode_jwt(header_value)
 	if header_value and email:
+		#return None
 		return get_by_email(email) 
 	else:
 		return None
@@ -127,7 +128,7 @@ def create_account():
 @app.route('/transactions', methods=['GET', 'POST', 'DELETE'])
 def manage_transactions():
 	user = authenticate(request)
-	if None:
+	if user == None:
 		return jsonify({"message": "Unauthorized"}), 401 
 	if request.method == 'POST':
 		data = request.json
@@ -177,7 +178,7 @@ def manage_transactions():
 @app.route('/categories', methods=['GET', 'POST'])
 def manage_categories():
 	user = authenticate(request)
-	if not user:
+	if user == None:
 		return jsonify({"message": "Unauthorized"}), 401 
 	if request.method == 'POST':
 		data = request.json
@@ -211,7 +212,7 @@ def manage_categories():
 @app.route('/methods', methods=['GET', 'POST'])
 def manage_methods():
 	user = authenticate(request)
-	if not user:
+	if user == None:
 		return jsonify({"message": "Unauthorized"}), 401 
 	if request.method == 'POST':
 		data = request.json
