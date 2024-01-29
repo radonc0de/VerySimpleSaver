@@ -18,7 +18,7 @@
 					</div>
 					<div class="field">
 						<div class="control">
-							<button class="button is-primary" on:click={createAccount} type="submit" tabindex="-1">Create Account</button>
+							<button class="button is-primary" on:click={createAccount}>Create Account</button>
 						</div>
 					</div>
             </div>

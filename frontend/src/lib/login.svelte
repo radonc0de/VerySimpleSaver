@@ -22,7 +22,7 @@
 					</div>
 					<div class="field">
 						<div class="control">
-							<button class="button is-primary" on:click={login} type="submit">Login</button>
+							<button class="button is-primary" on:click={login}>Login</button>
 						</div>
 					</div>
             </div>
