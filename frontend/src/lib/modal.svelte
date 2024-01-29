@@ -25,7 +25,7 @@
 	{#if $menuSelection < 4}
 		<section class="modal-card-body">
 			<form >
-				{#if $menuSelection == 1}
+				{#if $menuSelection >= 1 && $menuSelection < 2}
 					<label for="date">Date:</label>
 					<input type="date" id="date" bind:value={rawDate} />
 
@@ -125,9 +125,10 @@ import type Category from './category';
 import type Method from './method';
 import CategorySelect from './category-select.svelte';
 import MethodSelect from './method-select.svelte';
-import { addTransaction, addCategory, addMethod, menuSelection, email} from './store';
+import { editTransaction, addCategory, addMethod, menuSelection, email, transactionSelected} from './store';
 import Login from './login.svelte';
 import CreateAccount from './createAccount.svelte';
+import { onMount } from 'svelte';
 
 let login = false
 let createAccount = false
@@ -140,33 +141,55 @@ let amount = 0.0;
 let name = ""
 let colorString = "#FFFFFF";
 let parent_id = 0;
+let copiedTransaction = false;
 
 // handle unauthorized request redirect to login
 $: if (menuSelection){
 	if($menuSelection == 5.1){
 		logOut(false);
+	}else if($menuSelection == 1.1){
+		if ($transactionSelected && !copiedTransaction) {
+			console.log('yah')
+			method = $transactionSelected.method;
+			who = $transactionSelected.who;
+			desc = $transactionSelected.desc;
+			cat = $transactionSelected.cat;
+			amount = $transactionSelected.amount;
+			rawDate = formatToday($transactionSelected.date)
+			copiedTransaction = true;
+		}
 	}
 }
 
 function exitModal() {
 	login = false;
 	createAccount = false;
+	resetFields();
+	console.log("resetting fields.")
 	menuSelection.set(0);
 }
 
-function formatToday(): string {
-	let date = new Date();
-	let year = date.getFullYear();
-	let month = (date.getMonth() + 1).toString().padStart(2, '0');
-	let day = date.getDate().toString().padStart(2, '0');
+function formatToday(optDate?: number): string {
+	let year, month, day;
+	if(optDate){
+		let date = new Date(optDate * 1000)
+		year = date.getUTCFullYear();
+		month = (date.getUTCMonth() + 1).toString().padStart(2, '0');
+		day = date.getUTCDate().toString().padStart(2, '0');
+	}else{
+		let date = new Date();
+		year = date.getFullYear();
+		month = (date.getMonth() + 1).toString().padStart(2, '0');
+		day = date.getDate().toString().padStart(2, '0');
+	}
 	return `${year}-${month}-${day}`;
 }
 
 async function handleSubmit() {
-	if($menuSelection == 1){
+	if($menuSelection < 2){
 		let date = new Date(rawDate).getTime() / 1000;
 		let toSubmit: Transaction = {
-			id: 0, 
+			id: $menuSelection == 1.1 && $transactionSelected && $transactionSelected.id? $transactionSelected.id : 0, 
 			who, 
 			desc,
 			cat,
@@ -174,7 +197,7 @@ async function handleSubmit() {
 			method, 
 			date
 		}
-		addTransaction(toSubmit);
+		editTransaction(toSubmit);
 	}else if($menuSelection == 2){
 		let color = parseInt(colorString.slice(1), 16);
 		let toSubmit: Category = {
@@ -205,6 +228,7 @@ function resetFields() {
 	name = ""
 	colorString = "#FFFFFF";
 	parent_id = 0;
+	copiedTransaction = false;
 }
 
 function logOut(refresh: boolean){

@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { constants } from './env';
-	import { onMount } from 'svelte';
-	import { transactions, categories } from './store';
+	import { transactions, categories, transactionSelected, menuSelection } from './store';
 
 	let netMonth = 0;
 	let netYear = 0;
@@ -63,12 +62,12 @@
 		.catch((err) => {
 			console.error('Error:', err);
 		})
-		
 	}
 
-
-	onMount(async() => {
-	})
+	function editTransaction(){
+		transactionSelected.set($transactions.filter(t => t.id == selectedId)[0]);
+		menuSelection.set(1.1);
+	}
 
 </script>
 
@@ -97,7 +96,7 @@
 				{#if selectedId != 0}
 				<div class="field is-grouped">
 					<div class="control">
-						<button class="button is-success">Edit</button>
+						<button class="button is-success" on:click={editTransaction}>Edit</button>
 					</div>
 					<div class="control">
 						<button class="button is-danger" on:click={deleteTransaction}>Delete</button>

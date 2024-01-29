@@ -126,43 +126,14 @@ def create_account():
 		db.session.commit()
 		return jsonify({"message": "Account created successfully"}), 200
 		
-@app.route('/transactions', methods=['GET', 'POST', 'DELETE'])
+@app.route('/transactions', methods=['GET', 'POST', 'DELETE', 'PUT'])
 def manage_transactions():
+
 	user = authenticate(request)
 	if user == None:
 		return jsonify({"message": "Unauthorized"}), 401 
-	if request.method == 'POST':
-		data = request.json
-		entry = Transaction(
-			date = data['date'],
-			method = data['method'],
-			who = data['who'],
-			desc = data['desc'],
-			cat = data['cat'],
-			amount = data['amount'],
-			user_id = user.id
-		)
-		db.session.add(entry)
-		db.session.commit()
-		return jsonify(
-			{
-				'id': entry.id,
-				'date' : entry.date,
-				'method' : entry.method,
-				'who' : entry.who,
-				'desc' : entry.desc,
-				'cat' : entry.cat,
-				'amount' : entry.amount
-			}
-		)
-	elif request.method == 'DELETE':
-		data = request.json
-		transaction_id = data['id']
-		obj = Transaction.query.get(transaction_id)
-		db.session.delete(obj)
-		db.session.commit()
-		return jsonify({"message": "Delete successful"}), 200
-	else:
+
+	if request.method == 'GET':
 		entries = Transaction.query.filter_by(user_id=user.id).all()
 		return jsonify([
 			{
@@ -175,6 +146,53 @@ def manage_transactions():
 				'amount' : entry.amount
 			} for entry in entries
 		])
+		
+	data = request.json
+
+	if request.method == 'DELETE':
+		transaction_id = data['id']
+		entry = Transaction.query.get(transaction_id)
+
+		entry.session.delete(obj)
+		entry.session.commit()
+		return jsonify({"message": "Delete successful"}), 200
+
+	if request.method == 'POST':
+		entry = Transaction(
+			date = data['date'],
+			method = data['method'],
+			who = data['who'],
+			desc = data['desc'],
+			cat = data['cat'],
+			amount = data['amount'],
+			user_id = user.id
+		)
+		db.session.add(entry)
+
+	elif request.method == 'PUT':
+		transaction_id = data['id']
+		entry = Transaction.query.get(transaction_id)
+
+		entry.date = data['date']
+		entry.method = data['method']
+		entry.who = data['who']
+		entry.desc = data['desc']
+		entry.cat = data['cat']
+		entry.amount = data['amount']
+
+	# for put and post
+	db.session.commit()
+	return jsonify(
+		{
+			'id': entry.id,
+			'date' : entry.date,
+			'method' : entry.method,
+			'who' : entry.who,
+			'desc' : entry.desc,
+			'cat' : entry.cat,
+			'amount' : entry.amount
+		}
+	)
 
 @app.route('/categories', methods=['GET', 'POST'])
 def manage_categories():

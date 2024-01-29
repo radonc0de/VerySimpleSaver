@@ -9,6 +9,7 @@ export let categories = writable<Category[]>([]);
 export let transactions = writable<Transaction[]>([]);
 export let menuSelection = writable<number>();
 export let email = writable<string>("");
+export let transactionSelected = writable<Transaction>();
 
 menuSelection.set(0)
 let token = localStorage.getItem('token')
@@ -108,11 +109,11 @@ export async function getCategories(){
 	}
 }
 
-export async function addTransaction(t: Transaction){
+export async function editTransaction(t: Transaction){
 	let token = localStorage.getItem('token')
 	if(token){
 		await fetch(constants.API_URL + '/transactions', {
-			method: 'POST',
+			method:t.id != 0? 'PUT' : 'POST',
 			headers: {
 				'Content-Type' : 'application/json',
 				'token': token
@@ -120,6 +121,7 @@ export async function addTransaction(t: Transaction){
 			body: JSON.stringify(t), 
 		}).then(resp => resp.json()).then(data => {
 			transactions.update(curr => {
+				curr = curr.filter(a => a.id != t.id);
 				curr.push(data as Transaction);
 				return curr.sort((a, b) => b.date - a.date);
 			})
