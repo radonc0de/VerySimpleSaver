@@ -107,7 +107,8 @@ def login_request():
 		user = get_by_email(data['email'])
 		hashed_password = salt_and_hash_pass(data['password'])
 		if user and user.password == hashed_password:
-			token = create_jwt(data['email'])
+			token = create_jwt(user.email)
+			print('returning token: ' + token)
 			return jsonify({"token": token})
 		else:
 			return jsonify({"message": "Invalid Credentials"}), 401
@@ -236,6 +237,7 @@ def manage_methods():
 				'name': entry.name,
 			} for entry in entries
 		])
+
 if __name__ == '__main__':
 	db.create_all()  # Create database tables
 	app.run(debug=True)

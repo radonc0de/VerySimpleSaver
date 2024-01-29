@@ -3,28 +3,28 @@
         <div class="column is-10">
             <div class="box">
                 <h3 class="title is-3">Login</h3>
-				<div class="box">
-					{notice}
-				</div>
-                <div class="field">
-                    <label class="label" for="email">Email</label>
-                    <div class="control">
-                        <input class="input" type="email" id="email" placeholder="Enter email" bind:value={email}>
-                    </div>
-                </div>
-
-                <div class="field">
-                    <label class="label" for="password">Password</label>
-                    <div class="control">
-                        <input class="input" type="password" id="password" placeholder="Enter password" bind:value={password}>
-                    </div>
-                </div>
-
-                <div class="field">
-                    <div class="control">
-                        <button class="button is-primary" on:click={login}>Login</button>
-                    </div>
-                </div>
+					{#if info != ""}
+						<div class="box has-text-danger">
+							{info}
+						</div>
+					{/if}
+					<div class="field">
+						<label class="label" for="email">Email</label>
+						<div class="control">
+							<input class="input" type="email" id="email" placeholder="Enter email" bind:value={email}>
+						</div>
+					</div>
+					<div class="field">
+						<label class="label" for="password">Password</label>
+						<div class="control">
+							<input class="input" type="password" id="password" placeholder="Enter password" bind:value={password}>
+						</div>
+					</div>
+					<div class="field">
+						<div class="control">
+							<button class="button is-primary" on:click={login} type="submit">Login</button>
+						</div>
+					</div>
             </div>
         </div>
     </div>
@@ -35,23 +35,26 @@
 
 	let email = "";
 	let password = "";
-	export let notice = "";
+	let info = "";
 
 	async function login(){
-		await fetch(constants.API_URL + '/login', {
+		console.log(email, password)
+		const resp = await fetch(constants.API_URL + '/login', {
 			method: 'POST',
 			headers: {
 				'Content-Type' : 'application/json',
 			},
 			body: JSON.stringify({email, password})
-		}).then(resp => resp.json()).then(data => {
-			console.log(data.token)
+		});
+		if(resp.ok){
+			let data = await resp.json();
+			console.log(data.token);
 			localStorage.setItem('token', data.token);
 			window.location.href = ".";
-		})
-		.catch((err) => {
-			console.error('Error:', err);
-			return  null;
-		})
+		}else if(resp.status == 401){
+			info = "Incorrect email and/or password."
+		}else{
+			info = "An unknown error has occured."
+		}
 	}
 </script>

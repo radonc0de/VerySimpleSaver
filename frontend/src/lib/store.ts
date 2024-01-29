@@ -17,12 +17,13 @@ if(token){
 		let payloadJSON = atob(token.split('.')[1]);
 		let payload = JSON.parse(payloadJSON);
 		email.set(payload.email)
+		menuSelection.set(0);
 	}
 	catch{
 		menuSelection.set(5.1);
 	}
 }else{
-	menuSelection.set(5.1);
+	menuSelection.set(5);
 }
 
 export async function getTransactions(){

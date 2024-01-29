@@ -4,25 +4,23 @@
         <div class="column is-10">
             <div class="box">
                 <h3 class="title is-3">Create Account</h3>
-                <div class="field">
-                    <label class="label" for="email">Email</label>
-                    <div class="control">
-                        <input class="input" type="email" id="email" placeholder="Enter email" bind:value={email}>
-                    </div>
-                </div>
-
-                <div class="field">
-                    <label class="label" for="password">Password</label>
-                    <div class="control">
-                        <input class="input" type="password" id="password" placeholder="Enter password" bind:value={password}>
-                    </div>
-                </div>
-
-                <div class="field">
-                    <div class="control">
-                        <button class="button is-primary" on:click={createAccount}>Create Account</button>
-                    </div>
-                </div>
+					<div class="field">
+						<label class="label" for="email">Email</label>
+						<div class="control">
+							<input class="input" type="email" id="email" placeholder="Enter email" bind:value={email}>
+						</div>
+					</div>
+					<div class="field">
+						<label class="label" for="password">Password</label>
+						<div class="control">
+							<input class="input" type="password" id="password" placeholder="Enter password" bind:value={password}>
+						</div>
+					</div>
+					<div class="field">
+						<div class="control">
+							<button class="button is-primary" on:click={createAccount} type="submit" tabindex="-1">Create Account</button>
+						</div>
+					</div>
             </div>
         </div>
     </div>

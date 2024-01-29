@@ -20,7 +20,7 @@
 				Editor 
 			{/if}
 		</p>
-		<button class="delete" aria-label="close" on:click={() => menuSelection.set(0)}></button>
+		<button class="delete" aria-label="close" on:click={exitModal}></button>
 	</header>
 	{#if $menuSelection < 4}
 		<section class="modal-card-body">
@@ -77,7 +77,7 @@
 		</section>
 		<footer class="modal-card-foot">
 			<button class="button is-success" on:click|preventDefault={handleSubmit}>Save</button>
-			<button class="button" on:click={() => menuSelection.set(0)}>Cancel</button>
+			<button class="button" on:click={exitModal}>Cancel</button>
 		</footer>
 	{:else if $menuSelection >= 5}
 		<section class="modal-card-body">
@@ -101,7 +101,7 @@
 					</div>
 				</div>
 			{:else if login}
-				<Login bind:notice={notice} />
+				<Login />
 			{:else}
 				<CreateAccount />
 			{/if}
@@ -140,14 +140,18 @@ let amount = 0.0;
 let name = ""
 let colorString = "#FFFFFF";
 let parent_id = 0;
-let notice = "";
-let token = localStorage.getItem('token')
 
 // handle unauthorized request redirect to login
 $: if (menuSelection){
 	if($menuSelection == 5.1){
 		logOut(false);
 	}
+}
+
+function exitModal() {
+	login = false;
+	createAccount = false;
+	menuSelection.set(0);
 }
 
 function formatToday(): string {
@@ -204,6 +208,7 @@ function resetFields() {
 }
 
 function logOut(refresh: boolean){
+	console.log("calling logout. refresh = ", refresh); 
 	localStorage.removeItem('token');
 	if(refresh) window.location.href = ".";
 }
