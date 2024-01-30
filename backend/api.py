@@ -241,26 +241,13 @@ def manage_categories():
 	)
 
 
-@app.route('/methods', methods=['GET', 'POST'])
+@app.route('/methods', methods=['GET', 'POST', 'PUT'])
 def manage_methods():
 	user = authenticate(request)
 	if user == None:
 		return jsonify({"message": "Unauthorized"}), 401 
-	if request.method == 'POST':
-		data = request.json
-		entry = Method(
-			name = data['name'],
-			user_id = user.id
-		)
-		db.session.add(entry)
-		db.session.commit()
-		return jsonify(
-			{
-				'id': entry.id,
-				'name': entry.name,
-			}
-		)
-	else:
+
+	if request.method == 'GET':
 		entries = Method.query.filter_by(user_id=user.id).all()
 		return jsonify([
 			{
@@ -268,6 +255,28 @@ def manage_methods():
 				'name': entry.name,
 			} for entry in entries
 		])
+
+	data = request.json
+
+	if request.method == 'POST':
+		entry = Method(
+			name = data['name'],
+			user_id = user.id
+		)
+		db.session.add(entry)
+
+	elif request.method == 'PUT':
+		mth_id = data['id']
+		entry = Method.query.get(mth_id)
+		entry.name = data['name']
+
+	db.session.commit()
+	return jsonify(
+		{
+			'id': entry.id,
+			'name': entry.name,
+		}
+	)
 
 if __name__ == '__main__':
 	db.create_all()  # Create database tables

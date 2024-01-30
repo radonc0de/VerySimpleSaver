@@ -11,3 +11,9 @@
 	import { methods } from './store';
 	export let method = 0;
 </script>
+
+<style>
+	* {
+		width: 100%
+	}
+</style>

@@ -75,6 +75,13 @@
 
 					{:else if $menuSelection == 3}
 						<div class="field">
+							<label class="label" for="method">Edit a Method:</label>
+							<div class="control">
+								<MethodSelect bind:method={methodEdittingId} />
+							</div>
+						</div>
+
+						<div class="field">
 							<label class="label" for="name">Name</label>
 							<div class="control">
 								<input id="name" class="input" type="text" bind:value={name} placeholder="Method Name">
@@ -134,7 +141,7 @@ import type Category from './category';
 import type Method from './method';
 import CategorySelect from './category-select.svelte';
 import MethodSelect from './method-select.svelte';
-import { editTransaction, editCategory, addMethod, menuSelection, email, transactionSelected, categories, methods} from './store';
+import { editTransaction, editCategory, editMethod, menuSelection, email, transactionSelected, categories, methods} from './store';
 import Login from './login.svelte';
 import CreateAccount from './createAccount.svelte';
 import { onMount } from 'svelte';
@@ -153,7 +160,8 @@ let parent_id = 0;
 let copiedTransaction = false;
 let lastCopiedCategory = 0;
 let categoryEdittingId = 0;
-let methodEditting = 0
+let methodEdittingId = 0;
+let lastCopiedMethod = 0;
 
 $: if(categoryEdittingId && categoryEdittingId != lastCopiedCategory) {
 	let ctgry = $categories.filter(a => a.id == categoryEdittingId)[0];
@@ -161,6 +169,12 @@ $: if(categoryEdittingId && categoryEdittingId != lastCopiedCategory) {
 	parent_id = ctgry.parent_id;
 	colorString = '#' + ctgry.color.toString(16).padStart(6, '0');
 	lastCopiedCategory = categoryEdittingId;
+}
+
+$: if(methodEdittingId && methodEdittingId != lastCopiedMethod) {
+	let mth = $methods.filter(a => a.id == methodEdittingId)[0];
+	name = mth.name;
+	lastCopiedMethod = methodEdittingId;
 }
 
 // handle unauthorized request redirect to login
@@ -228,10 +242,10 @@ async function handleSubmit() {
 		editCategory(toSubmit);
 	}else if($menuSelection == 3){
 		let toSubmit: Method = {
-			id: 0,
+			id: methodEdittingId != 0? methodEdittingId : 0,
 			name,
 		}
-		addMethod(toSubmit);
+		editMethod(toSubmit);
 	}
 	resetFields();
 }

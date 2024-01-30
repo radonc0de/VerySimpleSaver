@@ -157,11 +157,11 @@ export async function editCategory(c: Category){
 	}
 }
 
-export async function addMethod(m: Method){
+export async function editMethod(m: Method){
 	let token = localStorage.getItem('token')
 	if(token){
 		await fetch(constants.API_URL + '/methods', {
-			method: 'POST',
+			method:m.id != 0? 'PUT' : 'POST',
 			headers: {
 				'Content-Type' : 'application/json',
 				'token': token
@@ -169,6 +169,7 @@ export async function addMethod(m: Method){
 			body: JSON.stringify(m), 
 		}).then(resp => resp.json()).then(data => {
 			methods.update(curr => {
+				curr = curr.filter(a => a.id != m.id);
 				curr.push(data as Method);
 				return curr;
 			})
