@@ -10,7 +10,7 @@
 			{:else if $menuSelection == 4}
 				Options	
 			{:else}
-				{#if $menuSelection == 1}
+				{#if $menuSelection <= 1.1}
 					Transaction
 				{:else if $menuSelection == 2}
 					Category
