@@ -2,15 +2,16 @@ from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from datetime import datetime, timedelta
-import copy
 import jwt
 import datetime
 import hashlib
+import os
 
 
 app = Flask(__name__)
 CORS(app)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:password@localhost/blk'
+db_url = os.environ["DB_URL"]
+app.config['SQLALCHEMY_DATABASE_URI'] = db_url
 db = SQLAlchemy(app)
 
 class Account(db.Model):
@@ -278,9 +279,18 @@ def manage_methods():
 		}
 	)
 
+@app.route('/heartbeat', methods=['GET'])
+def heartbeat():
+    return jsonify(
+        {
+            'message' : 'Amazing! Amazing! This is just like magic!' 
+        }
+    )
+
 if __name__ == '__main__':
-	db.create_all()  # Create database tables
-	app.run(debug=True)
+    with app.app_context():
+        db.create_all()  # Create database tables
+    app.run(debug=True)
 
 
 	
